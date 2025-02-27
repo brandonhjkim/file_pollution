@@ -115,6 +115,7 @@ pollution
 cor_matrix <- cor(pollution)
 cor_matrix
 ```
+The most correlation we see between variables is MORTRANK and NONWHITE, with a correlation score of .5676, however since MORTRANK is the grouping variable, we don't really care since we are looking for correlation between predictor variables. The second most correlation we see between variables is EDUC and PRECIP with a correlation of -.4904. This is not correlated significantly. 
 
 ```{r}
 heatmap(cor_matrix)
@@ -131,7 +132,10 @@ coefficients. Based on these coefficients, produce a ranking of variable importa
 ```{r}
 discrim(pollution[,-1], pollution[[1]])
 ```
+LD1 = -0.1722439y1 + 0.7507216y2 - 1.7675389y3 + 0.9193970y4 - 1.6834803y5
 
+LD2 = -5.0820234y1 + 0.3131456y2 + 5.2476849y3 + 9.0326716y4 - 1.4476618y5
+ 
 Carry out tests of significance for the discriminant functions. Be sure to specify
 corresponding null and alternative hypotheses, test statistic values, and p-values.
 Be sure to provide a conclusion for each test.
@@ -139,6 +143,29 @@ Be sure to provide a conclusion for each test.
 ```{r}
 discr.sig(pollution[,-1], pollution[[1]])
 ```
+let α1, α2, ..., αs be the population discriminant functions
+
+For LD1,
+
+H0: α1 = α2 = 0 <------- where 0 is the 0 vector
+
+Ha: at least one α1 or α2 != 0
+
+α* = .05/2 = .025
+
+With a p-value of 1.799089e-06, we reject the Null Hypothesis at α* = .025, so we conclude that we have significant evidence that at least one α1, α2 != 0 at the α* = .025 level.
+
+
+For LD2,
+
+H0: α2 = 0 <------- where 0 is the 0 vector
+
+Ha: α2 != 0
+
+α* = .05/2 = .025
+
+With a p-value of 7.081668e-01, we do not reject the Null Hypothesis at α* = .025, so we do not have significant evidence to suggest that α2, the second linear discriminant function, has a significant impact on group separability.
+
 
 Carry out tests of significance of each non-grouping variable, after adjusting the
 presence of other non-grouping variables. Be sure to specify corresponding null and
@@ -148,6 +175,12 @@ conclusion for each test.
 ```{r}
 partial.F(pollution[,-1], pollution[[1]])
 ```
+
+
+Using α* = .05/5 = .01
+
+
+
 
 Produce a plot of the first two linear discriminant functions. Be sure to include this
 plot in the report. Comment on the plot with regard to how well the discriminant
