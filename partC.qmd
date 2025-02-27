@@ -1,0 +1,164 @@
+---
+title: "Part C"
+author: "Justin Koida"
+format: 
+  html:
+    theme: darkly
+    toc: true
+    toc-depth: 2
+    toc-title: Part C Table of Contents
+editor: source
+embed-resources: true
+code-tools: true
+echo: true
+code-fold: true
+---
+
+## loading in stuff
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+discrim <- function(Y, group){
+Y <- data.matrix(Y)
+group <- as.factor(group)
+m1 <- manova(Y ~ group)
+nu.h <- summary(m1)$stats[1]
+nu.e <- summary(m1)$stats[2]
+p <- ncol(Y)
+SS <- summary(m1)$SS
+E.inv.H <- solve(SS$Residuals) %*% SS$group
+eig <- eigen(E.inv.H)
+s <- min(nu.h, p)
+lambda <- Re(eig$values[1:s])
+a <- Re(eig$vectors[,1:s])
+a.star <- (sqrt(diag(SS$Residuals/nu.e)) * a)
+return(list("a"=a, "a.stand"=a.star))
+}
+
+discr.sig <- function(Y, group){
+Y <- data.matrix(Y)
+group <- as.factor(group)
+m1 <- manova(Y ~ group)
+sums <- summary(m1)
+evals <- sums$Eigenvalues
+nu.e <- m1$df
+nu.h <- m1$rank-1
+k <- nu.h + 1
+p <- ncol(m1$coef)
+N <- nu.e + nu.h + 1
+s <- min(p, nu.h)
+lam <- numeric(s)
+dfs <- numeric(s)
+for(m in 1:s){
+lam[m] <- prod(1/(1+evals[m:s]))
+dfs[m] <- (p-m+1)*(k-m)
+}
+V <- -(N - 1 - .5*(p+k))*log(lam)
+p.val <- 1 - pchisq(V, dfs)
+out <- cbind(Lambda=lam, V, p.values=p.val)
+dimnames(out)[[1]] <- paste("LD",1:s,sep="")
+return(out)
+}
+
+partial.F <- function(Y, group){
+Y <- data.matrix(Y)
+group <- as.factor(group)
+p <- ncol(Y)
+m1 <- manova(Y ~ group)
+nu.e <- m1$df
+nu.h <- m1$rank-1
+Lambda.p <- summary(m1,test="Wilks")$stats[3]
+Lambda.p1 <- numeric(p)
+for(i in 1:p){
+dat <- data.matrix(Y[,-i])
+m2 <- manova(dat ~ group)
+Lambda.p1[i] <- summary(m2,test="Wilks")$stats[3]
+}
+Lambda <- Lambda.p / Lambda.p1
+F.stat <- ((1 - Lambda) / Lambda) * ((nu.e - p + 1)/nu.h)
+p.val <- 1 - pf(F.stat, nu.h, nu.e - p + 1)
+out <- cbind(Lambda, F.stat, p.value = p.val)
+dimnames(out)[[1]] <- dimnames(Y)[[2]]
+ord <- rev(order(out[,2]))
+return(out[ord,])
+}
+
+discr.plot <- function(Y, group, leg = NULL){
+a <- discrim(Y, group)$a
+z <- data.matrix(Y) %*% a
+plot(z[,1], z[,2], type = "n", xlab = "LD1", ylab="LD2")
+for(i in 1:length(unique(group))){
+points(z[group == unique(group)[i],1],
+z[group == unique(group)[i],2], pch = i)
+}
+#if(is.null(leg)) leg <- as.character(unique(group))
+#legend(locator(1),legend = leg,pch=1:length(unique(group)))
+}
+```
+
+```{r}
+pollution <- read_csv(here::here("pollution_419.csv"))
+
+pollution
+```
+
+
+## Part C
+
+
+### C part 1
+
+```{r}
+cor_matrix <- cor(pollution)
+cor_matrix
+```
+
+```{r}
+heatmap(cor_matrix)
+```
+
+
+### C part 2
+
+
+Write the complete form of all discriminant functions. Be sure to use standardized
+coefficients. Based on these coefficients, produce a ranking of variable importance
+(in the presence of other variables).
+
+```{r}
+discrim(pollution[,-1], pollution[[1]])
+```
+
+Carry out tests of significance for the discriminant functions. Be sure to specify
+corresponding null and alternative hypotheses, test statistic values, and p-values.
+Be sure to provide a conclusion for each test.
+
+```{r}
+discr.sig(pollution[,-1], pollution[[1]])
+```
+
+Carry out tests of significance of each non-grouping variable, after adjusting the
+presence of other non-grouping variables. Be sure to specify corresponding null and
+alternative hypotheses, test statistic values, and p-values. Be sure to provide a
+conclusion for each test.
+
+```{r}
+partial.F(pollution[,-1], pollution[[1]])
+```
+
+Produce a plot of the first two linear discriminant functions. Be sure to include this
+plot in the report. Comment on the plot with regard to how well the discriminant
+functions separate the groups in the data. NOTE: When using the corresponding
+function, the system will wait for you to click on the graph to place a legend for the
+symbols used in the graph. Be sure to click on a location that is empty for the legend
+placement. If the legend placement causes your system to lock up, modify the
+original function and remove the code that inserts the legend. In that event, you can
+manually insert your own legend by annotating the graph
+
+```{r}
+discr.plot(pollution[,-1], pollution[[1]])
+```
+
