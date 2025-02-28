@@ -1,12 +1,16 @@
 ---
-title: "Part C"
-author: "Justin Koida"
+title: "419 Final Project"
+author: "Justin Koida, PUT NAMES"
 format: 
   html:
-    theme: darkly
+    self-contained: true
+    code-fold: true
+    code-tools: true
+    embed-resources: true
     toc: true
     toc-depth: 2
-    toc-title: Part C Table of Contents
+    toc-title: Table of Contents
+    theme: lux
 editor: source
 embed-resources: true
 code-tools: true
@@ -14,13 +18,18 @@ echo: true
 code-fold: true
 ---
 
-## loading in stuff
+# loading in stuff
 
-```{r}
+```{r Package Loading}
+#| output: false
+
 library(tidyverse)
+library(DT)
 ```
 
-```{r}
+```{r Custom R functions loading}
+#| output: false
+
 discrim <- function(Y, group){
 Y <- data.matrix(Y)
 group <- as.factor(group)
@@ -99,46 +108,79 @@ z[group == unique(group)[i],2], pch = i)
 }
 ```
 
-```{r}
+```{r load in data}
+#| output: false
 pollution <- read_csv(here::here("pollution_419.csv"))
-
-pollution
+```
+```{r display data}
+datatable(pollution, 
+          caption = htmltools::tags$caption(
+            style = 'caption-side: top; text-align: left; font-size: 24px;',
+            "Pollution"
+          ), 
+          options = list(pageLength = 10)
+          )
 ```
 
-
-## Part C
-
-
-### C part 1
+# Section A
 
 ```{r}
-cor_matrix <- cor(pollution)
-cor_matrix
+
 ```
-The most correlation we see between variables is MORTRANK and NONWHITE, with a correlation score of .5676, however since MORTRANK is the grouping variable, we don't really care since we are looking for correlation between predictor variables. The second most correlation we see between variables is EDUC and PRECIP with a correlation of -.4904. This is not correlated significantly. 
+
+# Section B
 
 ```{r}
+
+```
+
+# Section C
+
+## C.1
+
+```{r correlation matrix table}
+cor_matrix <- round(cor(pollution[,-1]), 6)
+datatable(cor_matrix, 
+          caption = htmltools::tags$caption(
+            style = 'caption-side: top; text-align: left; font-size: 24px;',
+            "Correlation Matrix of Pollution Variables"
+          ), 
+          options = list(pageLength = 5)
+          )
+```
+The most correlation we see between variables is EDUC and PRECIP with a correlation of -.4904. This is not correlated significantly, so we will keep all the variables in this data set. 
+
+```{r heatmap}
 heatmap(cor_matrix)
 ```
 
+## C.2
 
-### C part 2
+### C.2 Part 1
 
 
-Write the complete form of all discriminant functions. Be sure to use standardized
-coefficients. Based on these coefficients, produce a ranking of variable importance
-(in the presence of other variables).
+*Write the complete form of all discriminant functions. Be sure to use standardized coefficients. Based on these coefficients, produce a ranking of variable importance (in the presence of other variables).*
+
+To start, we have k = 3 groups and p = 6 variables, so we have min(p, k-1) = 2 discriminant functions.
 
 ```{r}
 discrim(pollution[,-1], pollution[[1]])
 ```
+Here is the complete form of both discriminant functions:
+
 LD1 = -0.1722439y1 + 0.7507216y2 - 1.7675389y3 + 0.9193970y4 - 1.6834803y5
 
 LD2 = -5.0820234y1 + 0.3131456y2 + 5.2476849y3 + 9.0326716y4 - 1.4476618y5
+
+For the importance of variables based on the standardized coefficients, we have
+
+LD1: 3, 5, 4, 2, 1 --> NONWHITE, SO2, NOX, EDUC, PRECIP
+
+LD2: 4, 3, 1, 5, 2 --> NOX, NONWHITE, PRECIP, SO2, EDUC
+
+### C.2 Part 2
  
-Carry out tests of significance for the discriminant functions. Be sure to specify
-corresponding null and alternative hypotheses, test statistic values, and p-values.
-Be sure to provide a conclusion for each test.
+*Carry out tests of significance for the discriminant functions. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test.*
 
 ```{r}
 discr.sig(pollution[,-1], pollution[[1]])
@@ -166,32 +208,72 @@ Ha: α2 != 0
 
 With a p-value of 7.081668e-01, we do not reject the Null Hypothesis at α* = .025, so we do not have significant evidence to suggest that α2, the second linear discriminant function, has a significant impact on group separability.
 
+Conclude:
 
-Carry out tests of significance of each non-grouping variable, after adjusting the
-presence of other non-grouping variables. Be sure to specify corresponding null and
-alternative hypotheses, test statistic values, and p-values. Be sure to provide a
-conclusion for each test.
+We have sufficient evidence to conclude α1 significantly contributes to group separability at α* = .025. We have insufficient evidence to conclude α2 significantly contributes to group separability at α* = .025.
+
+### C.2 Part 3
+
+*Carry out tests of significance of each non-grouping variable, after adjusting the presence of other non-grouping variables. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test. *
 
 ```{r}
 partial.F(pollution[,-1], pollution[[1]])
 ```
-
-
 Using α* = .05/5 = .01
 
+We will check variable importance for each non-grouping variable after adjusting for the presence of the other non-grouping variables. 
+
+#### NONWHITE
+
+H0: The variable NONWHITE has no significant effect on group separation
+
+Ha: The variable NONWHITE has a significant effect on group separation
+
+With a Lambda stat of 0.7351297 and a p-value of 0.0002875051, we reject H0 at α* = .01, so there is strong evidence that NONWHITE individually contributes significantly to group separability, adjusting for other variables.
+
+#### SO2
+
+H0: The variable SO2 has no significant effect on group separation
+
+Ha: The variable SO2 has a significant effect on group separation
+
+With a Lambda stat of 0.8028967 and a p-value of 0.0029749625, we reject H0 at α* = .01, so there is strong evidence that SO2 individually contributes significantly to group separability, adjusting for other variables.
 
 
+#### NOX
 
-Produce a plot of the first two linear discriminant functions. Be sure to include this
-plot in the report. Comment on the plot with regard to how well the discriminant
-functions separate the groups in the data. NOTE: When using the corresponding
-function, the system will wait for you to click on the graph to place a legend for the
-symbols used in the graph. Be sure to click on a location that is empty for the legend
-placement. If the legend placement causes your system to lock up, modify the
-original function and remove the code that inserts the legend. In that event, you can
-manually insert your own legend by annotating the graph
+H0: The variable NOX has no significant effect on group separation
+
+Ha: The variable NOX has a significant effect on group separation
+
+With a Lambda stat of 0.9394342 and a p-value of 0.1909672716, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that NOX, individually, contributes significantly to group separation adjusting for other variables.
+
+
+#### EDUC
+
+H0: The variable EDUC has no significant effect on group separation
+
+Ha: The variable EDUC has a significant effect on group separation
+
+With a Lambda stat of 0.9559307 and a p-value of 0.3029006436, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that EDUC, individually, contributes significantly to group separation adjusting for other variables.
+
+
+#### PRECIP
+
+H0: The variable PRECIP has no significant effect on group separation
+
+Ha: The variable PRECIP has a significant effect on group separation
+
+With a Lambda stat of 0.9948165 and a p-value of 0.8713416049, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that PRECIP, individually, contributes significantly to group separation adjusting for other variables.
+
+### C.2 Part 4
+
+*Produce a plot of the first two linear discriminant functions. Be sure to include this plot in the report. Comment on the plot with regard to how well the discriminant functions separate the groups in the data. NOTE: When using the corresponding function, the system will wait for you to click on the graph to place a legend for the symbols used in the graph. Be sure to click on a location that is empty for the legend placement. If the legend placement causes your system to lock up, modify the original function and remove the code that inserts the legend. In that event, you can manually insert your own legend by annotating the graph *
 
 ```{r}
 discr.plot(pollution[,-1], pollution[[1]])
 ```
 
+LD1 seems to separate a decent amount of the pluses and circles when looking at the projection onto LD1. However, there still seems to be some overlap between a few of the plues, a few of the circles, and many of the triangles.
+
+LD2 does not separate the groups well at all.
