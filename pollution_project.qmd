@@ -2,7 +2,11 @@
 title: "419 Final Project"
 author: "Justin Koida, PUT NAMES"
 format: 
-  html:
+  pdf:
+    mainfont: "Times New Roman"
+    fontsize: 12pt
+    engine: xelatex
+    prefer-html: true
     self-contained: true
     code-fold: true
     code-tools: true
@@ -18,13 +22,54 @@ echo: true
 code-fold: true
 ---
 
+
+<!-- --- -->
+<!-- title: "419 Final Project" -->
+<!-- author: "Justin Koida, PUT NAMES" -->
+<!-- format:  -->
+<!--   html: -->
+<!--     self-contained: true -->
+<!--     code-fold: true -->
+<!--     code-tools: true -->
+<!--     embed-resources: true -->
+<!--     toc: true -->
+<!--     toc-depth: 2 -->
+<!--     toc-title: Table of Contents -->
+<!--     theme: lux -->
+<!-- editor: source -->
+<!-- embed-resources: true -->
+<!-- code-tools: true -->
+<!-- echo: true -->
+<!-- code-fold: true -->
+<!-- --- -->
+
 # loading in stuff
+
+## Getting stuff running
+
+REMOVE THIS BEFORE SUBMISSION
+
+*In order for people to run this, you will need to download some stuff as described below*
+
+First, you need to have quarto installed.
+
+Once you have quarto, here are the required packages this project uses: tidyverse and knitr. You can install these by running the following commands in the R studio console
+
+install.packages("tidyverse")
+
+install.packages("knitr")
+
+In order to render the pdf, you will need to download tinytex to your local device by running the following command in the terminal.
+
+quarto install tinytex
+
+
+Once all of this is done, should be good to go.
 
 ```{r Package Loading}
 #| output: false
 
 library(tidyverse)
-library(DT)
 ```
 
 ```{r Custom R functions loading}
@@ -112,14 +157,10 @@ z[group == unique(group)[i],2], pch = i)
 #| output: false
 pollution <- read_csv(here::here("pollution_419.csv"))
 ```
+
 ```{r display data}
-datatable(pollution, 
-          caption = htmltools::tags$caption(
-            style = 'caption-side: top; text-align: left; font-size: 24px;',
-            "Pollution"
-          ), 
-          options = list(pageLength = 10)
-          )
+knitr::kable(pollution, caption = "Pollution")
+
 ```
 
 # Section A
@@ -140,13 +181,8 @@ datatable(pollution,
 
 ```{r correlation matrix table}
 cor_matrix <- round(cor(pollution[,-1]), 6)
-datatable(cor_matrix, 
-          caption = htmltools::tags$caption(
-            style = 'caption-side: top; text-align: left; font-size: 24px;',
-            "Correlation Matrix of Pollution Variables"
-          ), 
-          options = list(pageLength = 5)
-          )
+knitr::kable(cor_matrix, caption = "Correlation Matrix of Pollution Variables")
+
 ```
 The most correlation we see between variables is EDUC and PRECIP with a correlation of -.4904. This is not correlated significantly, so we will keep all the variables in this data set. 
 
