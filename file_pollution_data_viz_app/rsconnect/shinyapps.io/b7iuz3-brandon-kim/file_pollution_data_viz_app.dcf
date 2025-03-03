@@ -1,0 +1,12 @@
+name: file_pollution_data_viz_app
+title: file_pollution_data_viz_app
+username: b7iuz3-brandon-kim
+account: b7iuz3-brandon-kim
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14148177
+bundleId: 9885178
+url: https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
