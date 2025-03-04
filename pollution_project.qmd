@@ -1,12 +1,8 @@
 ---
 title: "419 Final Project"
 author: "Justin Koida, PUT NAMES"
-format: 
-  pdf:
-    mainfont: "Times New Roman"
-    fontsize: 12pt
-    engine: xelatex
-    prefer-html: true
+format:
+  html:
     self-contained: true
     code-fold: true
     code-tools: true
@@ -21,13 +17,15 @@ code-tools: true
 echo: true
 code-fold: true
 ---
-
-
 <!-- --- -->
 <!-- title: "419 Final Project" -->
 <!-- author: "Justin Koida, PUT NAMES" -->
 <!-- format:  -->
 <!--   html: -->
+<!--     mainfont: "Times New Roman" -->
+<!--     fontsize: 12pt -->
+<!--     engine: xelatex -->
+<!--     prefer-html: true -->
 <!--     self-contained: true -->
 <!--     code-fold: true -->
 <!--     code-tools: true -->
@@ -68,8 +66,10 @@ Once all of this is done, should be good to go.
 
 ```{r Package Loading}
 #| output: false
+#| warning: false 
 
 library(tidyverse)
+library(tidymodels)
 ```
 
 ```{r Custom R functions loading}
@@ -158,6 +158,12 @@ z[group == unique(group)[i],2], pch = i)
 pollution <- read_csv(here::here("pollution_419.csv"))
 ```
 
+```{r fixing data}
+pollution <- pollution %>%
+  mutate(MORTRANK = as.factor(MORTRANK))
+```
+
+
 ```{r display data}
 knitr::kable(pollution, caption = "Pollution")
 
@@ -171,9 +177,27 @@ knitr::kable(pollution, caption = "Pollution")
 
 # Section B
 
-```{r}
+Interactive Histograms: 
 
+```{r}
+knitr::include_app('https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/', height = '925px')
 ```
+
+PCA Clusters:
+
+```{r}
+recipe(~., data = select(pollution, -MORTRANK)) %>%
+  step_normalize(all_numeric_predictors()) %>%  
+  step_pca(all_numeric_predictors(), num_comp = 2) %>%
+  prep() %>%
+  bake(new_data = select(pollution, -MORTRANK)) %>%
+  mutate(MORTANK = pollution$MORTRANK) %>%
+  ggplot(aes(x=PC1, y=PC2, color=MORTANK)) +
+    geom_point() +
+    theme_bw() +
+    labs(title = 'PCA Clusters')
+```
+
 
 # Section C
 
