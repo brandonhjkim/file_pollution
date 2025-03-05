@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Justin Koida, PUT NAMES">
+<meta name="author" content="Justin Koida, Brandon Kim">
 
 <title>419 Final Project</title>
 <style>
@@ -3090,7 +3090,12 @@ vertical-align: -.125em;
   <li><a href="#getting-stuff-running" id="toc-getting-stuff-running" class="nav-link" data-scroll-target="#getting-stuff-running">Getting stuff running</a></li>
   </ul></li>
   <li><a href="#section-a" id="toc-section-a" class="nav-link" data-scroll-target="#section-a">Section A</a></li>
-  <li><a href="#section-b" id="toc-section-b" class="nav-link" data-scroll-target="#section-b">Section B</a></li>
+  <li><a href="#section-b" id="toc-section-b" class="nav-link" data-scroll-target="#section-b">Section B</a>
+  <ul class="collapse">
+  <li><a href="#interactive-histograms" id="toc-interactive-histograms" class="nav-link" data-scroll-target="#interactive-histograms">Interactive Histograms:</a></li>
+  <li><a href="#pca-clusters" id="toc-pca-clusters" class="nav-link" data-scroll-target="#pca-clusters">PCA Clusters:</a></li>
+  <li><a href="#scaled-k-means" id="toc-scaled-k-means" class="nav-link" data-scroll-target="#scaled-k-means">Scaled K-means</a></li>
+  </ul></li>
   <li><a href="#section-c" id="toc-section-c" class="nav-link" data-scroll-target="#section-c">Section C</a>
   <ul class="collapse">
   <li><a href="#c.1" id="toc-c.1" class="nav-link" data-scroll-target="#c.1">C.1</a></li>
@@ -3113,7 +3118,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Justin Koida, PUT NAMES </p>
+             <p>Justin Koida, Brandon Kim </p>
           </div>
   </div>
     
@@ -3165,7 +3170,8 @@ vertical-align: -.125em;
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -3258,14 +3264,21 @@ vertical-align: -.125em;
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(pollution, <span class="at">caption =</span> <span class="st">&quot;Pollution&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pollution <span class="ot">&lt;-</span> pollution <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MORTRANK =</span> <span class="fu">as.factor</span>(MORTRANK))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(pollution, <span class="at">caption =</span> <span class="st">&quot;Pollution&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Pollution</caption>
 <thead>
 <tr class="header">
-<th style="text-align: right;">MORTRANK</th>
+<th style="text-align: left;">MORTRANK</th>
 <th style="text-align: right;">PRECIP</th>
 <th style="text-align: right;">EDUC</th>
 <th style="text-align: right;">NONWHITE</th>
@@ -3275,7 +3288,7 @@ vertical-align: -.125em;
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">13</td>
 <td style="text-align: right;">12.2</td>
 <td style="text-align: right;">3.0</td>
@@ -3283,7 +3296,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">3</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">28</td>
 <td style="text-align: right;">12.1</td>
 <td style="text-align: right;">7.5</td>
@@ -3291,7 +3304,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">10</td>
 <td style="text-align: right;">12.1</td>
 <td style="text-align: right;">5.9</td>
@@ -3299,7 +3312,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">20</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">43</td>
 <td style="text-align: right;">9.5</td>
 <td style="text-align: right;">2.9</td>
@@ -3307,7 +3320,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">32</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">25</td>
 <td style="text-align: right;">12.1</td>
 <td style="text-align: right;">2.0</td>
@@ -3315,7 +3328,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">26</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">35</td>
 <td style="text-align: right;">11.8</td>
 <td style="text-align: right;">14.8</td>
@@ -3323,7 +3336,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">60</td>
 <td style="text-align: right;">11.5</td>
 <td style="text-align: right;">13.5</td>
@@ -3331,7 +3344,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">11</td>
 <td style="text-align: right;">12.1</td>
 <td style="text-align: right;">7.8</td>
@@ -3339,7 +3352,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">130</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">31</td>
 <td style="text-align: right;">10.9</td>
 <td style="text-align: right;">5.1</td>
@@ -3347,7 +3360,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">10</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">15</td>
 <td style="text-align: right;">12.2</td>
 <td style="text-align: right;">4.7</td>
@@ -3355,7 +3368,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">28</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">32</td>
 <td style="text-align: right;">11.1</td>
 <td style="text-align: right;">5.0</td>
@@ -3363,7 +3376,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">18</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">43</td>
 <td style="text-align: right;">11.5</td>
 <td style="text-align: right;">7.2</td>
@@ -3371,7 +3384,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">10</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">31</td>
 <td style="text-align: right;">11.4</td>
 <td style="text-align: right;">11.5</td>
@@ -3379,7 +3392,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">37</td>
 <td style="text-align: right;">12.0</td>
 <td style="text-align: right;">3.6</td>
@@ -3387,7 +3400,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">44</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">45</td>
 <td style="text-align: right;">11.1</td>
 <td style="text-align: right;">1.0</td>
@@ -3395,7 +3408,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">8</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">35</td>
 <td style="text-align: right;">12.2</td>
 <td style="text-align: right;">5.7</td>
@@ -3403,7 +3416,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">20</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">45</td>
 <td style="text-align: right;">10.6</td>
 <td style="text-align: right;">5.3</td>
@@ -3411,7 +3424,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">4</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">45</td>
 <td style="text-align: right;">11.1</td>
 <td style="text-align: right;">3.4</td>
@@ -3419,7 +3432,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">20</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">18</td>
 <td style="text-align: right;">12.2</td>
 <td style="text-align: right;">13.7</td>
@@ -3427,7 +3440,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">86</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
 <td style="text-align: right;">42</td>
 <td style="text-align: right;">9.0</td>
 <td style="text-align: right;">4.8</td>
@@ -3435,7 +3448,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">49</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">40</td>
 <td style="text-align: right;">10.3</td>
 <td style="text-align: right;">2.5</td>
@@ -3443,7 +3456,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">11</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">36</td>
 <td style="text-align: right;">10.7</td>
 <td style="text-align: right;">6.7</td>
@@ -3451,7 +3464,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">20</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">35</td>
 <td style="text-align: right;">12.0</td>
 <td style="text-align: right;">12.6</td>
@@ -3459,7 +3472,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">4</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">36</td>
 <td style="text-align: right;">11.4</td>
 <td style="text-align: right;">8.8</td>
@@ -3467,7 +3480,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">59</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">46</td>
 <td style="text-align: right;">11.3</td>
 <td style="text-align: right;">8.8</td>
@@ -3475,7 +3488,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">8</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">30</td>
 <td style="text-align: right;">11.1</td>
 <td style="text-align: right;">5.8</td>
@@ -3483,7 +3496,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">125</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">43</td>
 <td style="text-align: right;">12.1</td>
 <td style="text-align: right;">3.5</td>
@@ -3491,7 +3504,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">62</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">36</td>
 <td style="text-align: right;">11.4</td>
 <td style="text-align: right;">12.4</td>
@@ -3499,7 +3512,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">16</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">42</td>
 <td style="text-align: right;">10.1</td>
 <td style="text-align: right;">2.2</td>
@@ -3507,7 +3520,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">18</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">30</td>
 <td style="text-align: right;">10.8</td>
 <td style="text-align: right;">13.1</td>
@@ -3515,7 +3528,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">11</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">41</td>
 <td style="text-align: right;">9.6</td>
 <td style="text-align: right;">2.7</td>
@@ -3523,7 +3536,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">89</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">38</td>
 <td style="text-align: right;">11.4</td>
 <td style="text-align: right;">3.8</td>
@@ -3531,7 +3544,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">25</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">46</td>
 <td style="text-align: right;">11.4</td>
 <td style="text-align: right;">21.0</td>
@@ -3539,7 +3552,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">34</td>
 <td style="text-align: right;">9.7</td>
 <td style="text-align: right;">17.2</td>
@@ -3547,7 +3560,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">68</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">38</td>
 <td style="text-align: right;">10.7</td>
 <td style="text-align: right;">11.7</td>
@@ -3555,7 +3568,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">39</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">37</td>
 <td style="text-align: right;">11.9</td>
 <td style="text-align: right;">13.1</td>
@@ -3563,7 +3576,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">15</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">31</td>
 <td style="text-align: right;">10.8</td>
 <td style="text-align: right;">15.8</td>
@@ -3571,7 +3584,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">124</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">45</td>
 <td style="text-align: right;">10.1</td>
 <td style="text-align: right;">21.0</td>
@@ -3579,7 +3592,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">78</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">44</td>
 <td style="text-align: right;">9.8</td>
 <td style="text-align: right;">0.8</td>
@@ -3587,7 +3600,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">33</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">2</td>
 <td style="text-align: right;">41</td>
 <td style="text-align: right;">12.3</td>
 <td style="text-align: right;">25.9</td>
@@ -3595,7 +3608,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">102</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">39</td>
 <td style="text-align: right;">11.4</td>
 <td style="text-align: right;">15.6</td>
@@ -3603,7 +3616,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">33</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">40</td>
 <td style="text-align: right;">10.2</td>
 <td style="text-align: right;">13.0</td>
@@ -3611,7 +3624,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">146</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">42</td>
 <td style="text-align: right;">10.4</td>
 <td style="text-align: right;">22.7</td>
@@ -3619,7 +3632,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">5</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">31</td>
 <td style="text-align: right;">10.7</td>
 <td style="text-align: right;">9.5</td>
@@ -3627,7 +3640,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">25</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">47</td>
 <td style="text-align: right;">11.1</td>
 <td style="text-align: right;">27.1</td>
@@ -3635,7 +3648,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">24</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">35</td>
 <td style="text-align: right;">11.1</td>
 <td style="text-align: right;">14.7</td>
@@ -3643,7 +3656,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">64</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">30</td>
 <td style="text-align: right;">9.9</td>
 <td style="text-align: right;">13.1</td>
@@ -3651,7 +3664,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">193</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">36</td>
 <td style="text-align: right;">10.6</td>
 <td style="text-align: right;">8.1</td>
@@ -3659,7 +3672,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">263</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">42</td>
 <td style="text-align: right;">10.7</td>
 <td style="text-align: right;">11.3</td>
@@ -3667,7 +3680,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">108</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">35</td>
 <td style="text-align: right;">11.0</td>
 <td style="text-align: right;">3.5</td>
@@ -3675,7 +3688,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">39</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">36</td>
 <td style="text-align: right;">10.5</td>
 <td style="text-align: right;">8.1</td>
@@ -3683,7 +3696,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">37</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">45</td>
 <td style="text-align: right;">11.3</td>
 <td style="text-align: right;">12.1</td>
@@ -3691,7 +3704,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">42</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">50</td>
 <td style="text-align: right;">10.4</td>
 <td style="text-align: right;">36.7</td>
@@ -3699,7 +3712,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">34</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">42</td>
 <td style="text-align: right;">10.5</td>
 <td style="text-align: right;">17.5</td>
@@ -3707,7 +3720,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">161</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">52</td>
 <td style="text-align: right;">9.6</td>
 <td style="text-align: right;">22.2</td>
@@ -3715,7 +3728,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">27</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">33</td>
 <td style="text-align: right;">10.9</td>
 <td style="text-align: right;">16.3</td>
@@ -3723,7 +3736,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">278</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">44</td>
 <td style="text-align: right;">11.0</td>
 <td style="text-align: right;">28.6</td>
@@ -3731,7 +3744,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">48</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">53</td>
 <td style="text-align: right;">10.2</td>
 <td style="text-align: right;">38.5</td>
@@ -3739,7 +3752,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">72</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">43</td>
 <td style="text-align: right;">9.6</td>
 <td style="text-align: right;">24.4</td>
@@ -3747,7 +3760,7 @@ vertical-align: -.125em;
 <td style="text-align: right;">206</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">3</td>
+<td style="text-align: left;">3</td>
 <td style="text-align: right;">54</td>
 <td style="text-align: right;">9.7</td>
 <td style="text-align: right;">31.4</td>
@@ -3765,14 +3778,93 @@ vertical-align: -.125em;
 </section>
 <section id="section-b" class="level1">
 <h1>Section B</h1>
+<p>To make our analysis easier for predictor-wise visualizations, we decided to develop an interactive RShiny applet to display all of the appropriate histograms as needed:</p>
+<section id="interactive-histograms" class="level2">
+<h2 class="anchored" data-anchor-id="interactive-histograms">Interactive Histograms:</h2>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_app</span>(<span class="st">&#39;https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/&#39;</span>, <span class="at">height =</span> <span class="st">&#39;925px&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_app</span>(<span class="st">&#39;https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/&#39;</span>, <span class="at">height =</span> <span class="st">&#39;925px&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <iframe src="https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/?showcase=0" width="672" height="925px" data-external="1">
 </iframe>
 </div>
+<p>(Please keep in note of the varying x axis per distribution)</p>
+<p><strong>Precipitation:</strong> Whilst the centers of the precipitations distributions across all groups are relatively similar (considering their standard deviations), it’s interesting to note that the group 1 has considerably higher variance than the other groups.</p>
+<p><strong>Education Level:</strong> All the groups distributions for education level are really similar. This is reflected in the overall distribution’s shape looking very similar to each groups.</p>
+<p><strong>Nonwhite %:</strong> Group 1 has significantly smaller nonwhite % in comparison to the other two groups. It might seem like group 2 and group 3 are also very different, but when considering their standard deviations, it’s more marginal than it seems. All 3 distributions seem to all show some right skew as well.</p>
+<p><strong>Nitrogen Oxides:</strong> Group 1 has massive outliers, skewing the mean and standard deviation to being way larger than they seem. Despite this, all 3 distributions have relatively high variance in consideration to their mean and median.</p>
+<p><strong>Sulfur Dioxides:</strong> Despite all distributions having roughly similar shape, group 3 has significantly larger spread compared to the other two groups. This high variance seems to really affect its mean and median.</p>
+<p>Overall, it seems like group 1 has massively different characteristics than the other two groups. We can see if this is the case visually through Principle Component Analysis, mapping the points on a 2 dimensional plane with PC1 and PC2 as its axis.</p>
+</section>
+<section id="pca-clusters" class="level2">
+<h2 class="anchored" data-anchor-id="pca-clusters">PCA Clusters:</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>prepped_recipe_pca <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span>., <span class="at">data =</span> <span class="fu">select</span>(pollution, <span class="sc">-</span>MORTRANK)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span>  </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_pca</span>(<span class="fu">all_numeric_predictors</span>(), <span class="at">num_comp =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>pca_data <span class="ot">&lt;-</span> prepped_recipe_pca <span class="sc">%&gt;%</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="fu">select</span>(pollution, <span class="sc">-</span>MORTRANK)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MORTANK =</span> pollution<span class="sc">$</span>MORTRANK) </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>pca_data <span class="sc">%&gt;%</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>PC1, <span class="at">y=</span>PC2, <span class="at">color=</span>MORTANK)) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&#39;PCA Groupings&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img role="img" src="data:image/png;base64,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" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As hypothesized, group 1 seems to have better separation from the other 2 groups. This might assist LDA into developing a function that can separate group 1 away from the other two. We can do a more formal examination with the k-means algorithm. To ensure reproducibility, we will set the starting centroids as the original scaled means of the groups.</p>
+</section>
+<section id="scaled-k-means" class="level2">
+<h2 class="anchored" data-anchor-id="scaled-k-means">Scaled K-means</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>scaled_predictors <span class="ot">&lt;-</span> pollution <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(PRECIP<span class="sc">:</span><span class="st">`</span><span class="at">SO2</span><span class="st">`</span>, <span class="sc">~</span> (. <span class="sc">-</span> <span class="fu">mean</span>(.)<span class="sc">/</span><span class="fu">sd</span>(.))))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>starting_points <span class="ot">&lt;-</span> scaled_predictors <span class="sc">%&gt;%</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(MORTRANK) <span class="sc">%&gt;%</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">across</span>(PRECIP<span class="sc">:</span><span class="st">`</span><span class="at">SO2</span><span class="st">`</span>, <span class="fu">list</span>(<span class="at">mean =</span> mean))) <span class="sc">%&gt;%</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>MORTRANK) <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>kmeans_result <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(<span class="fu">select</span>(scaled_predictors, <span class="sc">-</span>MORTRANK), </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                        <span class="at">centers =</span> starting_points, </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                        <span class="at">iter.max =</span> <span class="dv">100</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>scaled_predictors <span class="sc">%&gt;%</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">kmeans_groups =</span> kmeans_result<span class="sc">$</span>cluster) <span class="sc">%&gt;%</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(MORTRANK), <span class="at">fill=</span><span class="fu">as.factor</span>(kmeans_groups))) <span class="sc">+</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">&#39;fill&#39;</span>) <span class="sc">+</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&#39;purple&#39;</span>, <span class="st">&#39;orange&#39;</span>, <span class="st">&#39;brown&#39;</span>)) <span class="sc">+</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&#39;MORTRANK Group&#39;</span>, <span class="at">y =</span> <span class="st">&#39;&#39;</span>, </span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">title =</span> <span class="st">&#39;K-Means fit vs. Actual MORTRANK Groups&#39;</span>, </span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">fill =</span> <span class="st">&#39;K-Means Group&#39;</span>) <span class="sc">+</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img role="img" src="data:image/png;base64,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" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Unfortunately, the k-means algorithm does not fit the data well. Ideally, we would have 3 k-means groups of equal sizes that align with the MORTRANK groups well. However, k-means does not have a restriction on group sizes, so it seems as if 1 group is dominating. This k-means group was the original group that started with the centroid positioned at the 1st MORTRANK group’s mean values, which indicates that the other two initial centroids were not able to diverage and capture their points properly. This is probably because those two initial centroids were far closer to each other in terms of proxmity to points than the dominant intial centroid. This aligns with our principle component analysis, as group 1 has a far clearer separation than group 2 and 3.</p>
+</section>
 </section>
 <section id="section-c" class="level1">
 <h1>Section C</h1>
@@ -3781,8 +3873,8 @@ vertical-align: -.125em;
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">cor</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>]), <span class="dv">6</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(cor_matrix, <span class="at">caption =</span> <span class="st">&quot;Correlation Matrix of Pollution Variables&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">cor</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>]), <span class="dv">6</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(cor_matrix, <span class="at">caption =</span> <span class="st">&quot;Correlation Matrix of Pollution Variables&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -3846,7 +3938,7 @@ vertical-align: -.125em;
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(cor_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(cor_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -3866,7 +3958,7 @@ vertical-align: -.125em;
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">discrim</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">discrim</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>$a
@@ -3899,7 +3991,7 @@ $a.stand
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">discr.sig</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">discr.sig</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>       Lambda         V     p.values
@@ -3927,7 +4019,7 @@ LD2 0.9616608  2.150142 7.081668e-01</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">partial.F</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">partial.F</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>            Lambda    F.stat      p.value
@@ -3977,7 +4069,7 @@ PRECIP   0.9948165 0.1380797 0.8713416049</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">discr.plot</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">discr.plot</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -4468,318 +4560,394 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class>
-<div class="sourceCode" id="cb15" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;419 Final Project&quot;</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;Justin Koida, PUT NAMES&quot;</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">    self-contained: true</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 2</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-title: Table of Contents</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: lux</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> source</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="an">embed-resources:</span><span class="co"> true</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="an">code-tools:</span><span class="co"> true</span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="an">echo:</span><span class="co"> true</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="an">code-fold:</span><span class="co"> true</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- --- --&gt;</span></span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- title: &quot;419 Final Project&quot; --&gt;</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- author: &quot;Justin Koida, PUT NAMES&quot; --&gt;</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- format:  --&gt;</span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--   html: --&gt;</span></span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     mainfont: &quot;Times New Roman&quot; --&gt;</span></span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     fontsize: 12pt --&gt;</span></span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     engine: xelatex --&gt;</span></span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     prefer-html: true --&gt;</span></span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     self-contained: true --&gt;</span></span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     code-fold: true --&gt;</span></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     code-tools: true --&gt;</span></span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     embed-resources: true --&gt;</span></span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     toc: true --&gt;</span></span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     toc-depth: 2 --&gt;</span></span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     toc-title: Table of Contents --&gt;</span></span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     theme: lux --&gt;</span></span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- editor: source --&gt;</span></span>
-<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- embed-resources: true --&gt;</span></span>
-<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- code-tools: true --&gt;</span></span>
-<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- echo: true --&gt;</span></span>
-<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- code-fold: true --&gt;</span></span>
-<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- --- --&gt;</span></span>
-<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a><span class="fu"># loading in stuff</span></span>
-<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a><span class="fu">## Getting stuff running</span></span>
-<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>REMOVE THIS BEFORE SUBMISSION</span>
-<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>*In order for people to run this, you will need to download some stuff as described below*</span>
-<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>First, you need to have quarto installed.</span>
-<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>Once you have quarto, here are the required packages this project uses: tidyverse and knitr. You can install these by running the following commands in the R studio console</span>
-<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>install.packages(&quot;tidyverse&quot;)</span>
-<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>install.packages(&quot;knitr&quot;)</span>
-<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a>In order to render the pdf, you will need to download tinytex to your local device by running the following command in the terminal.</span>
-<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a>quarto install tinytex</span>
-<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a>Once all of this is done, should be good to go.</span>
-<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a><span class="in">```{r Package Loading}</span></span>
-<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a><span class="in">#| output: false</span></span>
-<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
-<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a><span class="in">```{r Custom R functions loading}</span></span>
-<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a><span class="in">#| output: false</span></span>
-<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-76"><a href="#cb15-76" aria-hidden="true" tabindex="-1"></a><span class="in">discrim &lt;- function(Y, group){</span></span>
-<span id="cb15-77"><a href="#cb15-77" aria-hidden="true" tabindex="-1"></a><span class="in">Y &lt;- data.matrix(Y)</span></span>
-<span id="cb15-78"><a href="#cb15-78" aria-hidden="true" tabindex="-1"></a><span class="in">group &lt;- as.factor(group)</span></span>
-<span id="cb15-79"><a href="#cb15-79" aria-hidden="true" tabindex="-1"></a><span class="in">m1 &lt;- manova(Y ~ group)</span></span>
-<span id="cb15-80"><a href="#cb15-80" aria-hidden="true" tabindex="-1"></a><span class="in">nu.h &lt;- summary(m1)$stats[1]</span></span>
-<span id="cb15-81"><a href="#cb15-81" aria-hidden="true" tabindex="-1"></a><span class="in">nu.e &lt;- summary(m1)$stats[2]</span></span>
-<span id="cb15-82"><a href="#cb15-82" aria-hidden="true" tabindex="-1"></a><span class="in">p &lt;- ncol(Y)</span></span>
-<span id="cb15-83"><a href="#cb15-83" aria-hidden="true" tabindex="-1"></a><span class="in">SS &lt;- summary(m1)$SS</span></span>
-<span id="cb15-84"><a href="#cb15-84" aria-hidden="true" tabindex="-1"></a><span class="in">E.inv.H &lt;- solve(SS$Residuals) %*% SS$group</span></span>
-<span id="cb15-85"><a href="#cb15-85" aria-hidden="true" tabindex="-1"></a><span class="in">eig &lt;- eigen(E.inv.H)</span></span>
-<span id="cb15-86"><a href="#cb15-86" aria-hidden="true" tabindex="-1"></a><span class="in">s &lt;- min(nu.h, p)</span></span>
-<span id="cb15-87"><a href="#cb15-87" aria-hidden="true" tabindex="-1"></a><span class="in">lambda &lt;- Re(eig$values[1:s])</span></span>
-<span id="cb15-88"><a href="#cb15-88" aria-hidden="true" tabindex="-1"></a><span class="in">a &lt;- Re(eig$vectors[,1:s])</span></span>
-<span id="cb15-89"><a href="#cb15-89" aria-hidden="true" tabindex="-1"></a><span class="in">a.star &lt;- (sqrt(diag(SS$Residuals/nu.e)) * a)</span></span>
-<span id="cb15-90"><a href="#cb15-90" aria-hidden="true" tabindex="-1"></a><span class="in">return(list(&quot;a&quot;=a, &quot;a.stand&quot;=a.star))</span></span>
-<span id="cb15-91"><a href="#cb15-91" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
-<span id="cb15-92"><a href="#cb15-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-93"><a href="#cb15-93" aria-hidden="true" tabindex="-1"></a><span class="in">discr.sig &lt;- function(Y, group){</span></span>
-<span id="cb15-94"><a href="#cb15-94" aria-hidden="true" tabindex="-1"></a><span class="in">Y &lt;- data.matrix(Y)</span></span>
-<span id="cb15-95"><a href="#cb15-95" aria-hidden="true" tabindex="-1"></a><span class="in">group &lt;- as.factor(group)</span></span>
-<span id="cb15-96"><a href="#cb15-96" aria-hidden="true" tabindex="-1"></a><span class="in">m1 &lt;- manova(Y ~ group)</span></span>
-<span id="cb15-97"><a href="#cb15-97" aria-hidden="true" tabindex="-1"></a><span class="in">sums &lt;- summary(m1)</span></span>
-<span id="cb15-98"><a href="#cb15-98" aria-hidden="true" tabindex="-1"></a><span class="in">evals &lt;- sums$Eigenvalues</span></span>
-<span id="cb15-99"><a href="#cb15-99" aria-hidden="true" tabindex="-1"></a><span class="in">nu.e &lt;- m1$df</span></span>
-<span id="cb15-100"><a href="#cb15-100" aria-hidden="true" tabindex="-1"></a><span class="in">nu.h &lt;- m1$rank-1</span></span>
-<span id="cb15-101"><a href="#cb15-101" aria-hidden="true" tabindex="-1"></a><span class="in">k &lt;- nu.h + 1</span></span>
-<span id="cb15-102"><a href="#cb15-102" aria-hidden="true" tabindex="-1"></a><span class="in">p &lt;- ncol(m1$coef)</span></span>
-<span id="cb15-103"><a href="#cb15-103" aria-hidden="true" tabindex="-1"></a><span class="in">N &lt;- nu.e + nu.h + 1</span></span>
-<span id="cb15-104"><a href="#cb15-104" aria-hidden="true" tabindex="-1"></a><span class="in">s &lt;- min(p, nu.h)</span></span>
-<span id="cb15-105"><a href="#cb15-105" aria-hidden="true" tabindex="-1"></a><span class="in">lam &lt;- numeric(s)</span></span>
-<span id="cb15-106"><a href="#cb15-106" aria-hidden="true" tabindex="-1"></a><span class="in">dfs &lt;- numeric(s)</span></span>
-<span id="cb15-107"><a href="#cb15-107" aria-hidden="true" tabindex="-1"></a><span class="in">for(m in 1:s){</span></span>
-<span id="cb15-108"><a href="#cb15-108" aria-hidden="true" tabindex="-1"></a><span class="in">lam[m] &lt;- prod(1/(1+evals[m:s]))</span></span>
-<span id="cb15-109"><a href="#cb15-109" aria-hidden="true" tabindex="-1"></a><span class="in">dfs[m] &lt;- (p-m+1)*(k-m)</span></span>
-<span id="cb15-110"><a href="#cb15-110" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
-<span id="cb15-111"><a href="#cb15-111" aria-hidden="true" tabindex="-1"></a><span class="in">V &lt;- -(N - 1 - .5*(p+k))*log(lam)</span></span>
-<span id="cb15-112"><a href="#cb15-112" aria-hidden="true" tabindex="-1"></a><span class="in">p.val &lt;- 1 - pchisq(V, dfs)</span></span>
-<span id="cb15-113"><a href="#cb15-113" aria-hidden="true" tabindex="-1"></a><span class="in">out &lt;- cbind(Lambda=lam, V, p.values=p.val)</span></span>
-<span id="cb15-114"><a href="#cb15-114" aria-hidden="true" tabindex="-1"></a><span class="in">dimnames(out)[[1]] &lt;- paste(&quot;LD&quot;,1:s,sep=&quot;&quot;)</span></span>
-<span id="cb15-115"><a href="#cb15-115" aria-hidden="true" tabindex="-1"></a><span class="in">return(out)</span></span>
-<span id="cb15-116"><a href="#cb15-116" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
-<span id="cb15-117"><a href="#cb15-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-118"><a href="#cb15-118" aria-hidden="true" tabindex="-1"></a><span class="in">partial.F &lt;- function(Y, group){</span></span>
-<span id="cb15-119"><a href="#cb15-119" aria-hidden="true" tabindex="-1"></a><span class="in">Y &lt;- data.matrix(Y)</span></span>
-<span id="cb15-120"><a href="#cb15-120" aria-hidden="true" tabindex="-1"></a><span class="in">group &lt;- as.factor(group)</span></span>
-<span id="cb15-121"><a href="#cb15-121" aria-hidden="true" tabindex="-1"></a><span class="in">p &lt;- ncol(Y)</span></span>
-<span id="cb15-122"><a href="#cb15-122" aria-hidden="true" tabindex="-1"></a><span class="in">m1 &lt;- manova(Y ~ group)</span></span>
-<span id="cb15-123"><a href="#cb15-123" aria-hidden="true" tabindex="-1"></a><span class="in">nu.e &lt;- m1$df</span></span>
-<span id="cb15-124"><a href="#cb15-124" aria-hidden="true" tabindex="-1"></a><span class="in">nu.h &lt;- m1$rank-1</span></span>
-<span id="cb15-125"><a href="#cb15-125" aria-hidden="true" tabindex="-1"></a><span class="in">Lambda.p &lt;- summary(m1,test=&quot;Wilks&quot;)$stats[3]</span></span>
-<span id="cb15-126"><a href="#cb15-126" aria-hidden="true" tabindex="-1"></a><span class="in">Lambda.p1 &lt;- numeric(p)</span></span>
-<span id="cb15-127"><a href="#cb15-127" aria-hidden="true" tabindex="-1"></a><span class="in">for(i in 1:p){</span></span>
-<span id="cb15-128"><a href="#cb15-128" aria-hidden="true" tabindex="-1"></a><span class="in">dat &lt;- data.matrix(Y[,-i])</span></span>
-<span id="cb15-129"><a href="#cb15-129" aria-hidden="true" tabindex="-1"></a><span class="in">m2 &lt;- manova(dat ~ group)</span></span>
-<span id="cb15-130"><a href="#cb15-130" aria-hidden="true" tabindex="-1"></a><span class="in">Lambda.p1[i] &lt;- summary(m2,test=&quot;Wilks&quot;)$stats[3]</span></span>
-<span id="cb15-131"><a href="#cb15-131" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
-<span id="cb15-132"><a href="#cb15-132" aria-hidden="true" tabindex="-1"></a><span class="in">Lambda &lt;- Lambda.p / Lambda.p1</span></span>
-<span id="cb15-133"><a href="#cb15-133" aria-hidden="true" tabindex="-1"></a><span class="in">F.stat &lt;- ((1 - Lambda) / Lambda) * ((nu.e - p + 1)/nu.h)</span></span>
-<span id="cb15-134"><a href="#cb15-134" aria-hidden="true" tabindex="-1"></a><span class="in">p.val &lt;- 1 - pf(F.stat, nu.h, nu.e - p + 1)</span></span>
-<span id="cb15-135"><a href="#cb15-135" aria-hidden="true" tabindex="-1"></a><span class="in">out &lt;- cbind(Lambda, F.stat, p.value = p.val)</span></span>
-<span id="cb15-136"><a href="#cb15-136" aria-hidden="true" tabindex="-1"></a><span class="in">dimnames(out)[[1]] &lt;- dimnames(Y)[[2]]</span></span>
-<span id="cb15-137"><a href="#cb15-137" aria-hidden="true" tabindex="-1"></a><span class="in">ord &lt;- rev(order(out[,2]))</span></span>
-<span id="cb15-138"><a href="#cb15-138" aria-hidden="true" tabindex="-1"></a><span class="in">return(out[ord,])</span></span>
-<span id="cb15-139"><a href="#cb15-139" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
-<span id="cb15-140"><a href="#cb15-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-141"><a href="#cb15-141" aria-hidden="true" tabindex="-1"></a><span class="in">discr.plot &lt;- function(Y, group, leg = NULL){</span></span>
-<span id="cb15-142"><a href="#cb15-142" aria-hidden="true" tabindex="-1"></a><span class="in">a &lt;- discrim(Y, group)$a</span></span>
-<span id="cb15-143"><a href="#cb15-143" aria-hidden="true" tabindex="-1"></a><span class="in">z &lt;- data.matrix(Y) %*% a</span></span>
-<span id="cb15-144"><a href="#cb15-144" aria-hidden="true" tabindex="-1"></a><span class="in">plot(z[,1], z[,2], type = &quot;n&quot;, xlab = &quot;LD1&quot;, ylab=&quot;LD2&quot;)</span></span>
-<span id="cb15-145"><a href="#cb15-145" aria-hidden="true" tabindex="-1"></a><span class="in">for(i in 1:length(unique(group))){</span></span>
-<span id="cb15-146"><a href="#cb15-146" aria-hidden="true" tabindex="-1"></a><span class="in">points(z[group == unique(group)[i],1],</span></span>
-<span id="cb15-147"><a href="#cb15-147" aria-hidden="true" tabindex="-1"></a><span class="in">z[group == unique(group)[i],2], pch = i)</span></span>
-<span id="cb15-148"><a href="#cb15-148" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
-<span id="cb15-149"><a href="#cb15-149" aria-hidden="true" tabindex="-1"></a><span class="in">#if(is.null(leg)) leg &lt;- as.character(unique(group))</span></span>
-<span id="cb15-150"><a href="#cb15-150" aria-hidden="true" tabindex="-1"></a><span class="in">#legend(locator(1),legend = leg,pch=1:length(unique(group)))</span></span>
-<span id="cb15-151"><a href="#cb15-151" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
-<span id="cb15-152"><a href="#cb15-152" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-153"><a href="#cb15-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-154"><a href="#cb15-154" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load in data}</span></span>
-<span id="cb15-155"><a href="#cb15-155" aria-hidden="true" tabindex="-1"></a><span class="in">#| output: false</span></span>
-<span id="cb15-156"><a href="#cb15-156" aria-hidden="true" tabindex="-1"></a><span class="in">pollution &lt;- read_csv(here::here(&quot;pollution_419.csv&quot;))</span></span>
-<span id="cb15-157"><a href="#cb15-157" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-158"><a href="#cb15-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-159"><a href="#cb15-159" aria-hidden="true" tabindex="-1"></a><span class="in">```{r display data}</span></span>
-<span id="cb15-160"><a href="#cb15-160" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::kable(pollution, caption = &quot;Pollution&quot;)</span></span>
-<span id="cb15-161"><a href="#cb15-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-162"><a href="#cb15-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-163"><a href="#cb15-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-164"><a href="#cb15-164" aria-hidden="true" tabindex="-1"></a><span class="fu"># Section A</span></span>
-<span id="cb15-165"><a href="#cb15-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-168"><a href="#cb15-168" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-169"><a href="#cb15-169" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-170"><a href="#cb15-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-171"><a href="#cb15-171" aria-hidden="true" tabindex="-1"></a><span class="fu"># Section B</span></span>
-<span id="cb15-172"><a href="#cb15-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-175"><a href="#cb15-175" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-176"><a href="#cb15-176" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_app</span>(<span class="st">&#39;https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/&#39;</span>, <span class="at">height =</span> <span class="st">&#39;925px&#39;</span>)</span>
-<span id="cb15-177"><a href="#cb15-177" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-178"><a href="#cb15-178" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-179"><a href="#cb15-179" aria-hidden="true" tabindex="-1"></a><span class="fu"># Section C</span></span>
-<span id="cb15-180"><a href="#cb15-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-181"><a href="#cb15-181" aria-hidden="true" tabindex="-1"></a><span class="fu">## C.1</span></span>
-<span id="cb15-182"><a href="#cb15-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-183"><a href="#cb15-183" aria-hidden="true" tabindex="-1"></a><span class="in">```{r correlation matrix table}</span></span>
-<span id="cb15-184"><a href="#cb15-184" aria-hidden="true" tabindex="-1"></a><span class="in">cor_matrix &lt;- round(cor(pollution[,-1]), 6)</span></span>
-<span id="cb15-185"><a href="#cb15-185" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::kable(cor_matrix, caption = &quot;Correlation Matrix of Pollution Variables&quot;)</span></span>
-<span id="cb15-186"><a href="#cb15-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-187"><a href="#cb15-187" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-188"><a href="#cb15-188" aria-hidden="true" tabindex="-1"></a>The most correlation we see between variables is EDUC and PRECIP with a correlation of -.4904. This is not correlated significantly, so we will keep all the variables in this data set. </span>
-<span id="cb15-189"><a href="#cb15-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-190"><a href="#cb15-190" aria-hidden="true" tabindex="-1"></a><span class="in">```{r heatmap}</span></span>
-<span id="cb15-191"><a href="#cb15-191" aria-hidden="true" tabindex="-1"></a><span class="in">heatmap(cor_matrix)</span></span>
-<span id="cb15-192"><a href="#cb15-192" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-193"><a href="#cb15-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-194"><a href="#cb15-194" aria-hidden="true" tabindex="-1"></a><span class="fu">## C.2</span></span>
-<span id="cb15-195"><a href="#cb15-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-196"><a href="#cb15-196" aria-hidden="true" tabindex="-1"></a><span class="fu">### C.2 Part 1</span></span>
-<span id="cb15-197"><a href="#cb15-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-198"><a href="#cb15-198" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-199"><a href="#cb15-199" aria-hidden="true" tabindex="-1"></a>*Write the complete form of all discriminant functions. Be sure to use standardized coefficients. Based on these coefficients, produce a ranking of variable importance (in the presence of other variables).*</span>
-<span id="cb15-200"><a href="#cb15-200" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-201"><a href="#cb15-201" aria-hidden="true" tabindex="-1"></a>To start, we have k = 3 groups and p = 6 variables, so we have min(p, k-1) = 2 discriminant functions.</span>
-<span id="cb15-202"><a href="#cb15-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-205"><a href="#cb15-205" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-206"><a href="#cb15-206" aria-hidden="true" tabindex="-1"></a><span class="fu">discrim</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span>
-<span id="cb15-207"><a href="#cb15-207" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-208"><a href="#cb15-208" aria-hidden="true" tabindex="-1"></a>Here is the complete form of both discriminant functions:</span>
-<span id="cb15-209"><a href="#cb15-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-210"><a href="#cb15-210" aria-hidden="true" tabindex="-1"></a>LD1 = -0.1722439y1 + 0.7507216y2 - 1.7675389y3 + 0.9193970y4 - 1.6834803y5</span>
-<span id="cb15-211"><a href="#cb15-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-212"><a href="#cb15-212" aria-hidden="true" tabindex="-1"></a>LD2 = -5.0820234y1 + 0.3131456y2 + 5.2476849y3 + 9.0326716y4 - 1.4476618y5</span>
-<span id="cb15-213"><a href="#cb15-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-214"><a href="#cb15-214" aria-hidden="true" tabindex="-1"></a>For the importance of variables based on the standardized coefficients, we have</span>
-<span id="cb15-215"><a href="#cb15-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-216"><a href="#cb15-216" aria-hidden="true" tabindex="-1"></a>LD1: 3, 5, 4, 2, 1 --&gt; NONWHITE, SO2, NOX, EDUC, PRECIP</span>
-<span id="cb15-217"><a href="#cb15-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-218"><a href="#cb15-218" aria-hidden="true" tabindex="-1"></a>LD2: 4, 3, 1, 5, 2 --&gt; NOX, NONWHITE, PRECIP, SO2, EDUC</span>
-<span id="cb15-219"><a href="#cb15-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-220"><a href="#cb15-220" aria-hidden="true" tabindex="-1"></a><span class="fu">### C.2 Part 2</span></span>
-<span id="cb15-221"><a href="#cb15-221" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb15-222"><a href="#cb15-222" aria-hidden="true" tabindex="-1"></a>*Carry out tests of significance for the discriminant functions. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test.*</span>
-<span id="cb15-223"><a href="#cb15-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-226"><a href="#cb15-226" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-227"><a href="#cb15-227" aria-hidden="true" tabindex="-1"></a><span class="fu">discr.sig</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span>
-<span id="cb15-228"><a href="#cb15-228" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-229"><a href="#cb15-229" aria-hidden="true" tabindex="-1"></a>let α1, α2, ..., αs be the population discriminant functions</span>
-<span id="cb15-230"><a href="#cb15-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-231"><a href="#cb15-231" aria-hidden="true" tabindex="-1"></a>For LD1,</span>
-<span id="cb15-232"><a href="#cb15-232" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-233"><a href="#cb15-233" aria-hidden="true" tabindex="-1"></a>H0: α1 = α2 = 0 &lt;------- where 0 is the 0 vector</span>
-<span id="cb15-234"><a href="#cb15-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-235"><a href="#cb15-235" aria-hidden="true" tabindex="-1"></a>Ha: at least one α1 or α2 != 0</span>
-<span id="cb15-236"><a href="#cb15-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-237"><a href="#cb15-237" aria-hidden="true" tabindex="-1"></a>α* = .05/2 = .025</span>
-<span id="cb15-238"><a href="#cb15-238" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-239"><a href="#cb15-239" aria-hidden="true" tabindex="-1"></a>With a p-value of 1.799089e-06, we reject the Null Hypothesis at α* = .025, so we conclude that we have significant evidence that at least one α1, α2 != 0 at the α* = .025 level.</span>
-<span id="cb15-240"><a href="#cb15-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-241"><a href="#cb15-241" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-242"><a href="#cb15-242" aria-hidden="true" tabindex="-1"></a>For LD2,</span>
-<span id="cb15-243"><a href="#cb15-243" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-244"><a href="#cb15-244" aria-hidden="true" tabindex="-1"></a>H0: α2 = 0 &lt;------- where 0 is the 0 vector</span>
-<span id="cb15-245"><a href="#cb15-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-246"><a href="#cb15-246" aria-hidden="true" tabindex="-1"></a>Ha: α2 != 0</span>
-<span id="cb15-247"><a href="#cb15-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-248"><a href="#cb15-248" aria-hidden="true" tabindex="-1"></a>α* = .05/2 = .025</span>
-<span id="cb15-249"><a href="#cb15-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-250"><a href="#cb15-250" aria-hidden="true" tabindex="-1"></a>With a p-value of 7.081668e-01, we do not reject the Null Hypothesis at α* = .025, so we do not have significant evidence to suggest that α2, the second linear discriminant function, has a significant impact on group separability.</span>
-<span id="cb15-251"><a href="#cb15-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-252"><a href="#cb15-252" aria-hidden="true" tabindex="-1"></a>Conclude:</span>
-<span id="cb15-253"><a href="#cb15-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-254"><a href="#cb15-254" aria-hidden="true" tabindex="-1"></a>We have sufficient evidence to conclude α1 significantly contributes to group separability at α* = .025. We have insufficient evidence to conclude α2 significantly contributes to group separability at α* = .025.</span>
-<span id="cb15-255"><a href="#cb15-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-256"><a href="#cb15-256" aria-hidden="true" tabindex="-1"></a><span class="fu">### C.2 Part 3</span></span>
-<span id="cb15-257"><a href="#cb15-257" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-258"><a href="#cb15-258" aria-hidden="true" tabindex="-1"></a>*Carry out tests of significance of each non-grouping variable, after adjusting the presence of other non-grouping variables. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test. *</span>
-<span id="cb15-259"><a href="#cb15-259" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-262"><a href="#cb15-262" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-263"><a href="#cb15-263" aria-hidden="true" tabindex="-1"></a><span class="fu">partial.F</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span>
-<span id="cb15-264"><a href="#cb15-264" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-265"><a href="#cb15-265" aria-hidden="true" tabindex="-1"></a>Using α* = .05/5 = .01</span>
-<span id="cb15-266"><a href="#cb15-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-267"><a href="#cb15-267" aria-hidden="true" tabindex="-1"></a>We will check variable importance for each non-grouping variable after adjusting for the presence of the other non-grouping variables. </span>
-<span id="cb15-268"><a href="#cb15-268" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-269"><a href="#cb15-269" aria-hidden="true" tabindex="-1"></a><span class="fu">#### NONWHITE</span></span>
-<span id="cb15-270"><a href="#cb15-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-271"><a href="#cb15-271" aria-hidden="true" tabindex="-1"></a>H0: The variable NONWHITE has no significant effect on group separation</span>
-<span id="cb15-272"><a href="#cb15-272" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-273"><a href="#cb15-273" aria-hidden="true" tabindex="-1"></a>Ha: The variable NONWHITE has a significant effect on group separation</span>
-<span id="cb15-274"><a href="#cb15-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-275"><a href="#cb15-275" aria-hidden="true" tabindex="-1"></a>With a Lambda stat of 0.7351297 and a p-value of 0.0002875051, we reject H0 at α* = .01, so there is strong evidence that NONWHITE individually contributes significantly to group separability, adjusting for other variables.</span>
-<span id="cb15-276"><a href="#cb15-276" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-277"><a href="#cb15-277" aria-hidden="true" tabindex="-1"></a><span class="fu">#### SO2</span></span>
-<span id="cb15-278"><a href="#cb15-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-279"><a href="#cb15-279" aria-hidden="true" tabindex="-1"></a>H0: The variable SO2 has no significant effect on group separation</span>
-<span id="cb15-280"><a href="#cb15-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-281"><a href="#cb15-281" aria-hidden="true" tabindex="-1"></a>Ha: The variable SO2 has a significant effect on group separation</span>
-<span id="cb15-282"><a href="#cb15-282" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-283"><a href="#cb15-283" aria-hidden="true" tabindex="-1"></a>With a Lambda stat of 0.8028967 and a p-value of 0.0029749625, we reject H0 at α* = .01, so there is strong evidence that SO2 individually contributes significantly to group separability, adjusting for other variables.</span>
-<span id="cb15-284"><a href="#cb15-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-285"><a href="#cb15-285" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-286"><a href="#cb15-286" aria-hidden="true" tabindex="-1"></a><span class="fu">#### NOX</span></span>
-<span id="cb15-287"><a href="#cb15-287" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-288"><a href="#cb15-288" aria-hidden="true" tabindex="-1"></a>H0: The variable NOX has no significant effect on group separation</span>
-<span id="cb15-289"><a href="#cb15-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-290"><a href="#cb15-290" aria-hidden="true" tabindex="-1"></a>Ha: The variable NOX has a significant effect on group separation</span>
-<span id="cb15-291"><a href="#cb15-291" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-292"><a href="#cb15-292" aria-hidden="true" tabindex="-1"></a>With a Lambda stat of 0.9394342 and a p-value of 0.1909672716, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that NOX, individually, contributes significantly to group separation adjusting for other variables.</span>
-<span id="cb15-293"><a href="#cb15-293" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-294"><a href="#cb15-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-295"><a href="#cb15-295" aria-hidden="true" tabindex="-1"></a><span class="fu">#### EDUC</span></span>
-<span id="cb15-296"><a href="#cb15-296" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-297"><a href="#cb15-297" aria-hidden="true" tabindex="-1"></a>H0: The variable EDUC has no significant effect on group separation</span>
-<span id="cb15-298"><a href="#cb15-298" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-299"><a href="#cb15-299" aria-hidden="true" tabindex="-1"></a>Ha: The variable EDUC has a significant effect on group separation</span>
-<span id="cb15-300"><a href="#cb15-300" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-301"><a href="#cb15-301" aria-hidden="true" tabindex="-1"></a>With a Lambda stat of 0.9559307 and a p-value of 0.3029006436, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that EDUC, individually, contributes significantly to group separation adjusting for other variables.</span>
-<span id="cb15-302"><a href="#cb15-302" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-303"><a href="#cb15-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-304"><a href="#cb15-304" aria-hidden="true" tabindex="-1"></a><span class="fu">#### PRECIP</span></span>
-<span id="cb15-305"><a href="#cb15-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-306"><a href="#cb15-306" aria-hidden="true" tabindex="-1"></a>H0: The variable PRECIP has no significant effect on group separation</span>
-<span id="cb15-307"><a href="#cb15-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-308"><a href="#cb15-308" aria-hidden="true" tabindex="-1"></a>Ha: The variable PRECIP has a significant effect on group separation</span>
-<span id="cb15-309"><a href="#cb15-309" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-310"><a href="#cb15-310" aria-hidden="true" tabindex="-1"></a>With a Lambda stat of 0.9948165 and a p-value of 0.8713416049, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that PRECIP, individually, contributes significantly to group separation adjusting for other variables.</span>
-<span id="cb15-311"><a href="#cb15-311" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-312"><a href="#cb15-312" aria-hidden="true" tabindex="-1"></a><span class="fu">### C.2 Part 4</span></span>
-<span id="cb15-313"><a href="#cb15-313" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-314"><a href="#cb15-314" aria-hidden="true" tabindex="-1"></a>*Produce a plot of the first two linear discriminant functions. Be sure to include this plot in the report. Comment on the plot with regard to how well the discriminant functions separate the groups in the data. NOTE: When using the corresponding function, the system will wait for you to click on the graph to place a legend for the symbols used in the graph. Be sure to click on a location that is empty for the legend placement. If the legend placement causes your system to lock up, modify the original function and remove the code that inserts the legend. In that event, you can manually insert your own legend by annotating the graph *</span>
-<span id="cb15-315"><a href="#cb15-315" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-318"><a href="#cb15-318" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb15-319"><a href="#cb15-319" aria-hidden="true" tabindex="-1"></a><span class="fu">discr.plot</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span>
-<span id="cb15-320"><a href="#cb15-320" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-321"><a href="#cb15-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-322"><a href="#cb15-322" aria-hidden="true" tabindex="-1"></a>LD1 seems to separate a decent amount of the pluses and circles when looking at the projection onto LD1. However, there still seems to be some overlap between a few of the plues, a few of the circles, and many of the triangles.</span>
-<span id="cb15-323"><a href="#cb15-323" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-324"><a href="#cb15-324" aria-hidden="true" tabindex="-1"></a>LD2 does not separate the groups well at all.</span>
+<div class="sourceCode" id="cb18" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;419 Final Project&quot;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;Justin Koida, Brandon Kim&quot;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">    self-contained: true</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 2</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-title: Table of Contents</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: lux</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> source</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="an">embed-resources:</span><span class="co"> true</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="an">code-tools:</span><span class="co"> true</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="an">echo:</span><span class="co"> true</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="an">code-fold:</span><span class="co"> true</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- --- --&gt;</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- title: &quot;419 Final Project&quot; --&gt;</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- author: &quot;Justin Koida, PUT NAMES&quot; --&gt;</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- format:  --&gt;</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--   html: --&gt;</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     mainfont: &quot;Times New Roman&quot; --&gt;</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     fontsize: 12pt --&gt;</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     engine: xelatex --&gt;</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     prefer-html: true --&gt;</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     self-contained: true --&gt;</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     code-fold: true --&gt;</span></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     code-tools: true --&gt;</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     embed-resources: true --&gt;</span></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     toc: true --&gt;</span></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     toc-depth: 2 --&gt;</span></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     toc-title: Table of Contents --&gt;</span></span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--     theme: lux --&gt;</span></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- editor: source --&gt;</span></span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- embed-resources: true --&gt;</span></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- code-tools: true --&gt;</span></span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- echo: true --&gt;</span></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- code-fold: true --&gt;</span></span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- --- --&gt;</span></span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a><span class="fu"># loading in stuff</span></span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a><span class="fu">## Getting stuff running</span></span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>REMOVE THIS BEFORE SUBMISSION</span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>*In order for people to run this, you will need to download some stuff as described below*</span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>First, you need to have quarto installed.</span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>Once you have quarto, here are the required packages this project uses: tidyverse and knitr. You can install these by running the following commands in the R studio console</span>
+<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a>install.packages(&quot;tidyverse&quot;)</span>
+<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a>install.packages(&quot;knitr&quot;)</span>
+<span id="cb18-59"><a href="#cb18-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-60"><a href="#cb18-60" aria-hidden="true" tabindex="-1"></a>In order to render the pdf, you will need to download tinytex to your local device by running the following command in the terminal.</span>
+<span id="cb18-61"><a href="#cb18-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-62"><a href="#cb18-62" aria-hidden="true" tabindex="-1"></a>quarto install tinytex</span>
+<span id="cb18-63"><a href="#cb18-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-64"><a href="#cb18-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-65"><a href="#cb18-65" aria-hidden="true" tabindex="-1"></a>Once all of this is done, should be good to go.</span>
+<span id="cb18-66"><a href="#cb18-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-67"><a href="#cb18-67" aria-hidden="true" tabindex="-1"></a><span class="in">```{r Package Loading}</span></span>
+<span id="cb18-68"><a href="#cb18-68" aria-hidden="true" tabindex="-1"></a><span class="in">#| output: false</span></span>
+<span id="cb18-69"><a href="#cb18-69" aria-hidden="true" tabindex="-1"></a><span class="in">#| warning: false </span></span>
+<span id="cb18-70"><a href="#cb18-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-71"><a href="#cb18-71" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb18-72"><a href="#cb18-72" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidymodels)</span></span>
+<span id="cb18-73"><a href="#cb18-73" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-74"><a href="#cb18-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-75"><a href="#cb18-75" aria-hidden="true" tabindex="-1"></a><span class="in">```{r Custom R functions loading}</span></span>
+<span id="cb18-76"><a href="#cb18-76" aria-hidden="true" tabindex="-1"></a><span class="in">#| output: false</span></span>
+<span id="cb18-77"><a href="#cb18-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-78"><a href="#cb18-78" aria-hidden="true" tabindex="-1"></a><span class="in">discrim &lt;- function(Y, group){</span></span>
+<span id="cb18-79"><a href="#cb18-79" aria-hidden="true" tabindex="-1"></a><span class="in">Y &lt;- data.matrix(Y)</span></span>
+<span id="cb18-80"><a href="#cb18-80" aria-hidden="true" tabindex="-1"></a><span class="in">group &lt;- as.factor(group)</span></span>
+<span id="cb18-81"><a href="#cb18-81" aria-hidden="true" tabindex="-1"></a><span class="in">m1 &lt;- manova(Y ~ group)</span></span>
+<span id="cb18-82"><a href="#cb18-82" aria-hidden="true" tabindex="-1"></a><span class="in">nu.h &lt;- summary(m1)$stats[1]</span></span>
+<span id="cb18-83"><a href="#cb18-83" aria-hidden="true" tabindex="-1"></a><span class="in">nu.e &lt;- summary(m1)$stats[2]</span></span>
+<span id="cb18-84"><a href="#cb18-84" aria-hidden="true" tabindex="-1"></a><span class="in">p &lt;- ncol(Y)</span></span>
+<span id="cb18-85"><a href="#cb18-85" aria-hidden="true" tabindex="-1"></a><span class="in">SS &lt;- summary(m1)$SS</span></span>
+<span id="cb18-86"><a href="#cb18-86" aria-hidden="true" tabindex="-1"></a><span class="in">E.inv.H &lt;- solve(SS$Residuals) %*% SS$group</span></span>
+<span id="cb18-87"><a href="#cb18-87" aria-hidden="true" tabindex="-1"></a><span class="in">eig &lt;- eigen(E.inv.H)</span></span>
+<span id="cb18-88"><a href="#cb18-88" aria-hidden="true" tabindex="-1"></a><span class="in">s &lt;- min(nu.h, p)</span></span>
+<span id="cb18-89"><a href="#cb18-89" aria-hidden="true" tabindex="-1"></a><span class="in">lambda &lt;- Re(eig$values[1:s])</span></span>
+<span id="cb18-90"><a href="#cb18-90" aria-hidden="true" tabindex="-1"></a><span class="in">a &lt;- Re(eig$vectors[,1:s])</span></span>
+<span id="cb18-91"><a href="#cb18-91" aria-hidden="true" tabindex="-1"></a><span class="in">a.star &lt;- (sqrt(diag(SS$Residuals/nu.e)) * a)</span></span>
+<span id="cb18-92"><a href="#cb18-92" aria-hidden="true" tabindex="-1"></a><span class="in">return(list(&quot;a&quot;=a, &quot;a.stand&quot;=a.star))</span></span>
+<span id="cb18-93"><a href="#cb18-93" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb18-94"><a href="#cb18-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-95"><a href="#cb18-95" aria-hidden="true" tabindex="-1"></a><span class="in">discr.sig &lt;- function(Y, group){</span></span>
+<span id="cb18-96"><a href="#cb18-96" aria-hidden="true" tabindex="-1"></a><span class="in">Y &lt;- data.matrix(Y)</span></span>
+<span id="cb18-97"><a href="#cb18-97" aria-hidden="true" tabindex="-1"></a><span class="in">group &lt;- as.factor(group)</span></span>
+<span id="cb18-98"><a href="#cb18-98" aria-hidden="true" tabindex="-1"></a><span class="in">m1 &lt;- manova(Y ~ group)</span></span>
+<span id="cb18-99"><a href="#cb18-99" aria-hidden="true" tabindex="-1"></a><span class="in">sums &lt;- summary(m1)</span></span>
+<span id="cb18-100"><a href="#cb18-100" aria-hidden="true" tabindex="-1"></a><span class="in">evals &lt;- sums$Eigenvalues</span></span>
+<span id="cb18-101"><a href="#cb18-101" aria-hidden="true" tabindex="-1"></a><span class="in">nu.e &lt;- m1$df</span></span>
+<span id="cb18-102"><a href="#cb18-102" aria-hidden="true" tabindex="-1"></a><span class="in">nu.h &lt;- m1$rank-1</span></span>
+<span id="cb18-103"><a href="#cb18-103" aria-hidden="true" tabindex="-1"></a><span class="in">k &lt;- nu.h + 1</span></span>
+<span id="cb18-104"><a href="#cb18-104" aria-hidden="true" tabindex="-1"></a><span class="in">p &lt;- ncol(m1$coef)</span></span>
+<span id="cb18-105"><a href="#cb18-105" aria-hidden="true" tabindex="-1"></a><span class="in">N &lt;- nu.e + nu.h + 1</span></span>
+<span id="cb18-106"><a href="#cb18-106" aria-hidden="true" tabindex="-1"></a><span class="in">s &lt;- min(p, nu.h)</span></span>
+<span id="cb18-107"><a href="#cb18-107" aria-hidden="true" tabindex="-1"></a><span class="in">lam &lt;- numeric(s)</span></span>
+<span id="cb18-108"><a href="#cb18-108" aria-hidden="true" tabindex="-1"></a><span class="in">dfs &lt;- numeric(s)</span></span>
+<span id="cb18-109"><a href="#cb18-109" aria-hidden="true" tabindex="-1"></a><span class="in">for(m in 1:s){</span></span>
+<span id="cb18-110"><a href="#cb18-110" aria-hidden="true" tabindex="-1"></a><span class="in">lam[m] &lt;- prod(1/(1+evals[m:s]))</span></span>
+<span id="cb18-111"><a href="#cb18-111" aria-hidden="true" tabindex="-1"></a><span class="in">dfs[m] &lt;- (p-m+1)*(k-m)</span></span>
+<span id="cb18-112"><a href="#cb18-112" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb18-113"><a href="#cb18-113" aria-hidden="true" tabindex="-1"></a><span class="in">V &lt;- -(N - 1 - .5*(p+k))*log(lam)</span></span>
+<span id="cb18-114"><a href="#cb18-114" aria-hidden="true" tabindex="-1"></a><span class="in">p.val &lt;- 1 - pchisq(V, dfs)</span></span>
+<span id="cb18-115"><a href="#cb18-115" aria-hidden="true" tabindex="-1"></a><span class="in">out &lt;- cbind(Lambda=lam, V, p.values=p.val)</span></span>
+<span id="cb18-116"><a href="#cb18-116" aria-hidden="true" tabindex="-1"></a><span class="in">dimnames(out)[[1]] &lt;- paste(&quot;LD&quot;,1:s,sep=&quot;&quot;)</span></span>
+<span id="cb18-117"><a href="#cb18-117" aria-hidden="true" tabindex="-1"></a><span class="in">return(out)</span></span>
+<span id="cb18-118"><a href="#cb18-118" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb18-119"><a href="#cb18-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-120"><a href="#cb18-120" aria-hidden="true" tabindex="-1"></a><span class="in">partial.F &lt;- function(Y, group){</span></span>
+<span id="cb18-121"><a href="#cb18-121" aria-hidden="true" tabindex="-1"></a><span class="in">Y &lt;- data.matrix(Y)</span></span>
+<span id="cb18-122"><a href="#cb18-122" aria-hidden="true" tabindex="-1"></a><span class="in">group &lt;- as.factor(group)</span></span>
+<span id="cb18-123"><a href="#cb18-123" aria-hidden="true" tabindex="-1"></a><span class="in">p &lt;- ncol(Y)</span></span>
+<span id="cb18-124"><a href="#cb18-124" aria-hidden="true" tabindex="-1"></a><span class="in">m1 &lt;- manova(Y ~ group)</span></span>
+<span id="cb18-125"><a href="#cb18-125" aria-hidden="true" tabindex="-1"></a><span class="in">nu.e &lt;- m1$df</span></span>
+<span id="cb18-126"><a href="#cb18-126" aria-hidden="true" tabindex="-1"></a><span class="in">nu.h &lt;- m1$rank-1</span></span>
+<span id="cb18-127"><a href="#cb18-127" aria-hidden="true" tabindex="-1"></a><span class="in">Lambda.p &lt;- summary(m1,test=&quot;Wilks&quot;)$stats[3]</span></span>
+<span id="cb18-128"><a href="#cb18-128" aria-hidden="true" tabindex="-1"></a><span class="in">Lambda.p1 &lt;- numeric(p)</span></span>
+<span id="cb18-129"><a href="#cb18-129" aria-hidden="true" tabindex="-1"></a><span class="in">for(i in 1:p){</span></span>
+<span id="cb18-130"><a href="#cb18-130" aria-hidden="true" tabindex="-1"></a><span class="in">dat &lt;- data.matrix(Y[,-i])</span></span>
+<span id="cb18-131"><a href="#cb18-131" aria-hidden="true" tabindex="-1"></a><span class="in">m2 &lt;- manova(dat ~ group)</span></span>
+<span id="cb18-132"><a href="#cb18-132" aria-hidden="true" tabindex="-1"></a><span class="in">Lambda.p1[i] &lt;- summary(m2,test=&quot;Wilks&quot;)$stats[3]</span></span>
+<span id="cb18-133"><a href="#cb18-133" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb18-134"><a href="#cb18-134" aria-hidden="true" tabindex="-1"></a><span class="in">Lambda &lt;- Lambda.p / Lambda.p1</span></span>
+<span id="cb18-135"><a href="#cb18-135" aria-hidden="true" tabindex="-1"></a><span class="in">F.stat &lt;- ((1 - Lambda) / Lambda) * ((nu.e - p + 1)/nu.h)</span></span>
+<span id="cb18-136"><a href="#cb18-136" aria-hidden="true" tabindex="-1"></a><span class="in">p.val &lt;- 1 - pf(F.stat, nu.h, nu.e - p + 1)</span></span>
+<span id="cb18-137"><a href="#cb18-137" aria-hidden="true" tabindex="-1"></a><span class="in">out &lt;- cbind(Lambda, F.stat, p.value = p.val)</span></span>
+<span id="cb18-138"><a href="#cb18-138" aria-hidden="true" tabindex="-1"></a><span class="in">dimnames(out)[[1]] &lt;- dimnames(Y)[[2]]</span></span>
+<span id="cb18-139"><a href="#cb18-139" aria-hidden="true" tabindex="-1"></a><span class="in">ord &lt;- rev(order(out[,2]))</span></span>
+<span id="cb18-140"><a href="#cb18-140" aria-hidden="true" tabindex="-1"></a><span class="in">return(out[ord,])</span></span>
+<span id="cb18-141"><a href="#cb18-141" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb18-142"><a href="#cb18-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-143"><a href="#cb18-143" aria-hidden="true" tabindex="-1"></a><span class="in">discr.plot &lt;- function(Y, group, leg = NULL){</span></span>
+<span id="cb18-144"><a href="#cb18-144" aria-hidden="true" tabindex="-1"></a><span class="in">a &lt;- discrim(Y, group)$a</span></span>
+<span id="cb18-145"><a href="#cb18-145" aria-hidden="true" tabindex="-1"></a><span class="in">z &lt;- data.matrix(Y) %*% a</span></span>
+<span id="cb18-146"><a href="#cb18-146" aria-hidden="true" tabindex="-1"></a><span class="in">plot(z[,1], z[,2], type = &quot;n&quot;, xlab = &quot;LD1&quot;, ylab=&quot;LD2&quot;)</span></span>
+<span id="cb18-147"><a href="#cb18-147" aria-hidden="true" tabindex="-1"></a><span class="in">for(i in 1:length(unique(group))){</span></span>
+<span id="cb18-148"><a href="#cb18-148" aria-hidden="true" tabindex="-1"></a><span class="in">points(z[group == unique(group)[i],1],</span></span>
+<span id="cb18-149"><a href="#cb18-149" aria-hidden="true" tabindex="-1"></a><span class="in">z[group == unique(group)[i],2], pch = i)</span></span>
+<span id="cb18-150"><a href="#cb18-150" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb18-151"><a href="#cb18-151" aria-hidden="true" tabindex="-1"></a><span class="in">#if(is.null(leg)) leg &lt;- as.character(unique(group))</span></span>
+<span id="cb18-152"><a href="#cb18-152" aria-hidden="true" tabindex="-1"></a><span class="in">#legend(locator(1),legend = leg,pch=1:length(unique(group)))</span></span>
+<span id="cb18-153"><a href="#cb18-153" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb18-154"><a href="#cb18-154" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-155"><a href="#cb18-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-156"><a href="#cb18-156" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load in data}</span></span>
+<span id="cb18-157"><a href="#cb18-157" aria-hidden="true" tabindex="-1"></a><span class="in">#| output: false</span></span>
+<span id="cb18-158"><a href="#cb18-158" aria-hidden="true" tabindex="-1"></a><span class="in">pollution &lt;- read_csv(here::here(&quot;pollution_419.csv&quot;))</span></span>
+<span id="cb18-159"><a href="#cb18-159" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-160"><a href="#cb18-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-161"><a href="#cb18-161" aria-hidden="true" tabindex="-1"></a><span class="in">```{r fixing data}</span></span>
+<span id="cb18-162"><a href="#cb18-162" aria-hidden="true" tabindex="-1"></a><span class="in">pollution &lt;- pollution %&gt;%</span></span>
+<span id="cb18-163"><a href="#cb18-163" aria-hidden="true" tabindex="-1"></a><span class="in">  mutate(MORTRANK = as.factor(MORTRANK))</span></span>
+<span id="cb18-164"><a href="#cb18-164" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-165"><a href="#cb18-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-166"><a href="#cb18-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-167"><a href="#cb18-167" aria-hidden="true" tabindex="-1"></a><span class="in">```{r display data}</span></span>
+<span id="cb18-168"><a href="#cb18-168" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::kable(pollution, caption = &quot;Pollution&quot;)</span></span>
+<span id="cb18-169"><a href="#cb18-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-170"><a href="#cb18-170" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-171"><a href="#cb18-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-172"><a href="#cb18-172" aria-hidden="true" tabindex="-1"></a><span class="fu"># Section A</span></span>
+<span id="cb18-173"><a href="#cb18-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-176"><a href="#cb18-176" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-177"><a href="#cb18-177" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-178"><a href="#cb18-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-179"><a href="#cb18-179" aria-hidden="true" tabindex="-1"></a><span class="fu"># Section B</span></span>
+<span id="cb18-180"><a href="#cb18-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-181"><a href="#cb18-181" aria-hidden="true" tabindex="-1"></a>To make our analysis easier for predictor-wise visualizations, we decided to develop an interactive RShiny applet to display all of the appropriate histograms as needed: </span>
+<span id="cb18-182"><a href="#cb18-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-183"><a href="#cb18-183" aria-hidden="true" tabindex="-1"></a><span class="fu">## Interactive Histograms: </span></span>
+<span id="cb18-184"><a href="#cb18-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-187"><a href="#cb18-187" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-188"><a href="#cb18-188" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_app</span>(<span class="st">&#39;https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/&#39;</span>, <span class="at">height =</span> <span class="st">&#39;925px&#39;</span>)</span>
+<span id="cb18-189"><a href="#cb18-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-190"><a href="#cb18-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-191"><a href="#cb18-191" aria-hidden="true" tabindex="-1"></a>(Please keep in note of the varying x axis per distribution)</span>
+<span id="cb18-192"><a href="#cb18-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-193"><a href="#cb18-193" aria-hidden="true" tabindex="-1"></a>**Precipitation:** Whilst the centers of the precipitations distributions across all groups are relatively similar (considering their standard deviations), it&#39;s interesting to note that the group 1 has considerably higher variance than the other groups. </span>
+<span id="cb18-194"><a href="#cb18-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-195"><a href="#cb18-195" aria-hidden="true" tabindex="-1"></a>**Education Level:** All the groups distributions for education level are really similar. This is reflected in the overall distribution&#39;s shape looking very similar to each groups. </span>
+<span id="cb18-196"><a href="#cb18-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-197"><a href="#cb18-197" aria-hidden="true" tabindex="-1"></a>**Nonwhite %:** Group 1 has significantly smaller nonwhite % in comparison to the other two groups. It might seem like group 2 and group 3 are also very different, but when considering their standard deviations, it&#39;s more marginal than it seems. All 3 distributions seem to all show some right skew as well. </span>
+<span id="cb18-198"><a href="#cb18-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-199"><a href="#cb18-199" aria-hidden="true" tabindex="-1"></a>**Nitrogen Oxides:** Group 1 has massive outliers, skewing the mean and standard deviation to being way larger than they seem. Despite this, all 3 distributions have relatively high variance in consideration to their mean and median. </span>
+<span id="cb18-200"><a href="#cb18-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-201"><a href="#cb18-201" aria-hidden="true" tabindex="-1"></a>**Sulfur Dioxides:** Despite all distributions having roughly similar shape, group 3 has significantly larger spread compared to the other two groups. This high variance seems to really affect its mean and median. </span>
+<span id="cb18-202"><a href="#cb18-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-203"><a href="#cb18-203" aria-hidden="true" tabindex="-1"></a>Overall, it seems like group 1 has massively different characteristics than the other two groups. We can see if this is the case visually through Principle Component Analysis, mapping the points on a 2 dimensional plane with PC1 and PC2 as its axis. </span>
+<span id="cb18-204"><a href="#cb18-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-205"><a href="#cb18-205" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA Clusters:</span></span>
+<span id="cb18-206"><a href="#cb18-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-209"><a href="#cb18-209" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-210"><a href="#cb18-210" aria-hidden="true" tabindex="-1"></a>prepped_recipe_pca <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span>., <span class="at">data =</span> <span class="fu">select</span>(pollution, <span class="sc">-</span>MORTRANK)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-211"><a href="#cb18-211" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span>  </span>
+<span id="cb18-212"><a href="#cb18-212" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_pca</span>(<span class="fu">all_numeric_predictors</span>(), <span class="at">num_comp =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-213"><a href="#cb18-213" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() </span>
+<span id="cb18-214"><a href="#cb18-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-215"><a href="#cb18-215" aria-hidden="true" tabindex="-1"></a>pca_data <span class="ot">&lt;-</span> prepped_recipe_pca <span class="sc">%&gt;%</span></span>
+<span id="cb18-216"><a href="#cb18-216" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> <span class="fu">select</span>(pollution, <span class="sc">-</span>MORTRANK)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-217"><a href="#cb18-217" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MORTANK =</span> pollution<span class="sc">$</span>MORTRANK) </span>
+<span id="cb18-218"><a href="#cb18-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-219"><a href="#cb18-219" aria-hidden="true" tabindex="-1"></a>pca_data <span class="sc">%&gt;%</span></span>
+<span id="cb18-220"><a href="#cb18-220" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>PC1, <span class="at">y=</span>PC2, <span class="at">color=</span>MORTANK)) <span class="sc">+</span></span>
+<span id="cb18-221"><a href="#cb18-221" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb18-222"><a href="#cb18-222" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb18-223"><a href="#cb18-223" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&#39;PCA Groupings&#39;</span>)</span>
+<span id="cb18-224"><a href="#cb18-224" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-225"><a href="#cb18-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-226"><a href="#cb18-226" aria-hidden="true" tabindex="-1"></a>As hypothesized, group 1 seems to have better separation from the other 2 groups. This might assist LDA into developing a function that can separate group 1 away from the other two. We can do a more formal examination with the k-means algorithm. To ensure reproducibility, we will set the starting centroids as the original scaled means of the groups. </span>
+<span id="cb18-227"><a href="#cb18-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-228"><a href="#cb18-228" aria-hidden="true" tabindex="-1"></a><span class="fu">## Scaled K-means</span></span>
+<span id="cb18-229"><a href="#cb18-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-232"><a href="#cb18-232" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-233"><a href="#cb18-233" aria-hidden="true" tabindex="-1"></a>scaled_predictors <span class="ot">&lt;-</span> pollution <span class="sc">%&gt;%</span></span>
+<span id="cb18-234"><a href="#cb18-234" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(PRECIP<span class="sc">:</span><span class="st">`</span><span class="at">SO2</span><span class="st">`</span>, <span class="sc">~</span> (. <span class="sc">-</span> <span class="fu">mean</span>(.)<span class="sc">/</span><span class="fu">sd</span>(.))))</span>
+<span id="cb18-235"><a href="#cb18-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-236"><a href="#cb18-236" aria-hidden="true" tabindex="-1"></a>starting_points <span class="ot">&lt;-</span> scaled_predictors <span class="sc">%&gt;%</span></span>
+<span id="cb18-237"><a href="#cb18-237" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(MORTRANK) <span class="sc">%&gt;%</span></span>
+<span id="cb18-238"><a href="#cb18-238" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">across</span>(PRECIP<span class="sc">:</span><span class="st">`</span><span class="at">SO2</span><span class="st">`</span>, <span class="fu">list</span>(<span class="at">mean =</span> mean))) <span class="sc">%&gt;%</span></span>
+<span id="cb18-239"><a href="#cb18-239" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>MORTRANK) <span class="sc">%&gt;%</span></span>
+<span id="cb18-240"><a href="#cb18-240" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb18-241"><a href="#cb18-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-242"><a href="#cb18-242" aria-hidden="true" tabindex="-1"></a>kmeans_result <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(<span class="fu">select</span>(scaled_predictors, <span class="sc">-</span>MORTRANK), </span>
+<span id="cb18-243"><a href="#cb18-243" aria-hidden="true" tabindex="-1"></a>                        <span class="at">centers =</span> starting_points, </span>
+<span id="cb18-244"><a href="#cb18-244" aria-hidden="true" tabindex="-1"></a>                        <span class="at">iter.max =</span> <span class="dv">100</span>)</span>
+<span id="cb18-245"><a href="#cb18-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-246"><a href="#cb18-246" aria-hidden="true" tabindex="-1"></a>scaled_predictors <span class="sc">%&gt;%</span></span>
+<span id="cb18-247"><a href="#cb18-247" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">kmeans_groups =</span> kmeans_result<span class="sc">$</span>cluster) <span class="sc">%&gt;%</span></span>
+<span id="cb18-248"><a href="#cb18-248" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(MORTRANK), <span class="at">fill=</span><span class="fu">as.factor</span>(kmeans_groups))) <span class="sc">+</span></span>
+<span id="cb18-249"><a href="#cb18-249" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">&#39;fill&#39;</span>) <span class="sc">+</span></span>
+<span id="cb18-250"><a href="#cb18-250" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&#39;purple&#39;</span>, <span class="st">&#39;orange&#39;</span>, <span class="st">&#39;brown&#39;</span>)) <span class="sc">+</span></span>
+<span id="cb18-251"><a href="#cb18-251" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&#39;MORTRANK Group&#39;</span>, <span class="at">y =</span> <span class="st">&#39;&#39;</span>, </span>
+<span id="cb18-252"><a href="#cb18-252" aria-hidden="true" tabindex="-1"></a>         <span class="at">title =</span> <span class="st">&#39;K-Means fit vs. Actual MORTRANK Groups&#39;</span>, </span>
+<span id="cb18-253"><a href="#cb18-253" aria-hidden="true" tabindex="-1"></a>         <span class="at">fill =</span> <span class="st">&#39;K-Means Group&#39;</span>) <span class="sc">+</span></span>
+<span id="cb18-254"><a href="#cb18-254" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span>
+<span id="cb18-255"><a href="#cb18-255" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-256"><a href="#cb18-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-257"><a href="#cb18-257" aria-hidden="true" tabindex="-1"></a>Unfortunately, the k-means algorithm does not fit the data well. Ideally, we would have 3 k-means groups of equal sizes that align with the MORTRANK groups well. However, k-means does not have a restriction on group sizes, so it seems as if 1 group is dominating. This k-means group was the original group that started with the centroid positioned at the 1st MORTRANK group&#39;s mean values, which indicates that the other two initial centroids were not able to diverage and capture their points properly. This is probably because those two initial centroids were far closer to each other in terms of proxmity to points than the dominant intial centroid. This aligns with our principle component analysis, as group 1 has a far clearer separation than group 2 and 3. </span>
+<span id="cb18-258"><a href="#cb18-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-259"><a href="#cb18-259" aria-hidden="true" tabindex="-1"></a><span class="fu"># Section C</span></span>
+<span id="cb18-260"><a href="#cb18-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-261"><a href="#cb18-261" aria-hidden="true" tabindex="-1"></a><span class="fu">## C.1</span></span>
+<span id="cb18-262"><a href="#cb18-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-263"><a href="#cb18-263" aria-hidden="true" tabindex="-1"></a><span class="in">```{r correlation matrix table}</span></span>
+<span id="cb18-264"><a href="#cb18-264" aria-hidden="true" tabindex="-1"></a><span class="in">cor_matrix &lt;- round(cor(pollution[,-1]), 6)</span></span>
+<span id="cb18-265"><a href="#cb18-265" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::kable(cor_matrix, caption = &quot;Correlation Matrix of Pollution Variables&quot;)</span></span>
+<span id="cb18-266"><a href="#cb18-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-267"><a href="#cb18-267" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-268"><a href="#cb18-268" aria-hidden="true" tabindex="-1"></a>The most correlation we see between variables is EDUC and PRECIP with a correlation of -.4904. This is not correlated significantly, so we will keep all the variables in this data set. </span>
+<span id="cb18-269"><a href="#cb18-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-270"><a href="#cb18-270" aria-hidden="true" tabindex="-1"></a><span class="in">```{r heatmap}</span></span>
+<span id="cb18-271"><a href="#cb18-271" aria-hidden="true" tabindex="-1"></a><span class="in">heatmap(cor_matrix)</span></span>
+<span id="cb18-272"><a href="#cb18-272" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-273"><a href="#cb18-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-274"><a href="#cb18-274" aria-hidden="true" tabindex="-1"></a><span class="fu">## C.2</span></span>
+<span id="cb18-275"><a href="#cb18-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-276"><a href="#cb18-276" aria-hidden="true" tabindex="-1"></a><span class="fu">### C.2 Part 1</span></span>
+<span id="cb18-277"><a href="#cb18-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-278"><a href="#cb18-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-279"><a href="#cb18-279" aria-hidden="true" tabindex="-1"></a>*Write the complete form of all discriminant functions. Be sure to use standardized coefficients. Based on these coefficients, produce a ranking of variable importance (in the presence of other variables).*</span>
+<span id="cb18-280"><a href="#cb18-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-281"><a href="#cb18-281" aria-hidden="true" tabindex="-1"></a>To start, we have k = 3 groups and p = 6 variables, so we have min(p, k-1) = 2 discriminant functions.</span>
+<span id="cb18-282"><a href="#cb18-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-285"><a href="#cb18-285" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-286"><a href="#cb18-286" aria-hidden="true" tabindex="-1"></a><span class="fu">discrim</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span>
+<span id="cb18-287"><a href="#cb18-287" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-288"><a href="#cb18-288" aria-hidden="true" tabindex="-1"></a>Here is the complete form of both discriminant functions:</span>
+<span id="cb18-289"><a href="#cb18-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-290"><a href="#cb18-290" aria-hidden="true" tabindex="-1"></a>LD1 = -0.1722439y1 + 0.7507216y2 - 1.7675389y3 + 0.9193970y4 - 1.6834803y5</span>
+<span id="cb18-291"><a href="#cb18-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-292"><a href="#cb18-292" aria-hidden="true" tabindex="-1"></a>LD2 = -5.0820234y1 + 0.3131456y2 + 5.2476849y3 + 9.0326716y4 - 1.4476618y5</span>
+<span id="cb18-293"><a href="#cb18-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-294"><a href="#cb18-294" aria-hidden="true" tabindex="-1"></a>For the importance of variables based on the standardized coefficients, we have</span>
+<span id="cb18-295"><a href="#cb18-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-296"><a href="#cb18-296" aria-hidden="true" tabindex="-1"></a>LD1: 3, 5, 4, 2, 1 --&gt; NONWHITE, SO2, NOX, EDUC, PRECIP</span>
+<span id="cb18-297"><a href="#cb18-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-298"><a href="#cb18-298" aria-hidden="true" tabindex="-1"></a>LD2: 4, 3, 1, 5, 2 --&gt; NOX, NONWHITE, PRECIP, SO2, EDUC</span>
+<span id="cb18-299"><a href="#cb18-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-300"><a href="#cb18-300" aria-hidden="true" tabindex="-1"></a><span class="fu">### C.2 Part 2</span></span>
+<span id="cb18-301"><a href="#cb18-301" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb18-302"><a href="#cb18-302" aria-hidden="true" tabindex="-1"></a>*Carry out tests of significance for the discriminant functions. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test.*</span>
+<span id="cb18-303"><a href="#cb18-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-306"><a href="#cb18-306" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-307"><a href="#cb18-307" aria-hidden="true" tabindex="-1"></a><span class="fu">discr.sig</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span>
+<span id="cb18-308"><a href="#cb18-308" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-309"><a href="#cb18-309" aria-hidden="true" tabindex="-1"></a>let α1, α2, ..., αs be the population discriminant functions</span>
+<span id="cb18-310"><a href="#cb18-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-311"><a href="#cb18-311" aria-hidden="true" tabindex="-1"></a>For LD1,</span>
+<span id="cb18-312"><a href="#cb18-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-313"><a href="#cb18-313" aria-hidden="true" tabindex="-1"></a>H0: α1 = α2 = 0 &lt;------- where 0 is the 0 vector</span>
+<span id="cb18-314"><a href="#cb18-314" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-315"><a href="#cb18-315" aria-hidden="true" tabindex="-1"></a>Ha: at least one α1 or α2 != 0</span>
+<span id="cb18-316"><a href="#cb18-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-317"><a href="#cb18-317" aria-hidden="true" tabindex="-1"></a>α* = .05/2 = .025</span>
+<span id="cb18-318"><a href="#cb18-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-319"><a href="#cb18-319" aria-hidden="true" tabindex="-1"></a>With a p-value of 1.799089e-06, we reject the Null Hypothesis at α* = .025, so we conclude that we have significant evidence that at least one α1, α2 != 0 at the α* = .025 level.</span>
+<span id="cb18-320"><a href="#cb18-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-321"><a href="#cb18-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-322"><a href="#cb18-322" aria-hidden="true" tabindex="-1"></a>For LD2,</span>
+<span id="cb18-323"><a href="#cb18-323" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-324"><a href="#cb18-324" aria-hidden="true" tabindex="-1"></a>H0: α2 = 0 &lt;------- where 0 is the 0 vector</span>
+<span id="cb18-325"><a href="#cb18-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-326"><a href="#cb18-326" aria-hidden="true" tabindex="-1"></a>Ha: α2 != 0</span>
+<span id="cb18-327"><a href="#cb18-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-328"><a href="#cb18-328" aria-hidden="true" tabindex="-1"></a>α* = .05/2 = .025</span>
+<span id="cb18-329"><a href="#cb18-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-330"><a href="#cb18-330" aria-hidden="true" tabindex="-1"></a>With a p-value of 7.081668e-01, we do not reject the Null Hypothesis at α* = .025, so we do not have significant evidence to suggest that α2, the second linear discriminant function, has a significant impact on group separability.</span>
+<span id="cb18-331"><a href="#cb18-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-332"><a href="#cb18-332" aria-hidden="true" tabindex="-1"></a>Conclude:</span>
+<span id="cb18-333"><a href="#cb18-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-334"><a href="#cb18-334" aria-hidden="true" tabindex="-1"></a>We have sufficient evidence to conclude α1 significantly contributes to group separability at α* = .025. We have insufficient evidence to conclude α2 significantly contributes to group separability at α* = .025.</span>
+<span id="cb18-335"><a href="#cb18-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-336"><a href="#cb18-336" aria-hidden="true" tabindex="-1"></a><span class="fu">### C.2 Part 3</span></span>
+<span id="cb18-337"><a href="#cb18-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-338"><a href="#cb18-338" aria-hidden="true" tabindex="-1"></a>*Carry out tests of significance of each non-grouping variable, after adjusting the presence of other non-grouping variables. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test. *</span>
+<span id="cb18-339"><a href="#cb18-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-342"><a href="#cb18-342" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-343"><a href="#cb18-343" aria-hidden="true" tabindex="-1"></a><span class="fu">partial.F</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span>
+<span id="cb18-344"><a href="#cb18-344" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-345"><a href="#cb18-345" aria-hidden="true" tabindex="-1"></a>Using α* = .05/5 = .01</span>
+<span id="cb18-346"><a href="#cb18-346" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-347"><a href="#cb18-347" aria-hidden="true" tabindex="-1"></a>We will check variable importance for each non-grouping variable after adjusting for the presence of the other non-grouping variables. </span>
+<span id="cb18-348"><a href="#cb18-348" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-349"><a href="#cb18-349" aria-hidden="true" tabindex="-1"></a><span class="fu">#### NONWHITE</span></span>
+<span id="cb18-350"><a href="#cb18-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-351"><a href="#cb18-351" aria-hidden="true" tabindex="-1"></a>H0: The variable NONWHITE has no significant effect on group separation</span>
+<span id="cb18-352"><a href="#cb18-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-353"><a href="#cb18-353" aria-hidden="true" tabindex="-1"></a>Ha: The variable NONWHITE has a significant effect on group separation</span>
+<span id="cb18-354"><a href="#cb18-354" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-355"><a href="#cb18-355" aria-hidden="true" tabindex="-1"></a>With a Lambda stat of 0.7351297 and a p-value of 0.0002875051, we reject H0 at α* = .01, so there is strong evidence that NONWHITE individually contributes significantly to group separability, adjusting for other variables.</span>
+<span id="cb18-356"><a href="#cb18-356" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-357"><a href="#cb18-357" aria-hidden="true" tabindex="-1"></a><span class="fu">#### SO2</span></span>
+<span id="cb18-358"><a href="#cb18-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-359"><a href="#cb18-359" aria-hidden="true" tabindex="-1"></a>H0: The variable SO2 has no significant effect on group separation</span>
+<span id="cb18-360"><a href="#cb18-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-361"><a href="#cb18-361" aria-hidden="true" tabindex="-1"></a>Ha: The variable SO2 has a significant effect on group separation</span>
+<span id="cb18-362"><a href="#cb18-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-363"><a href="#cb18-363" aria-hidden="true" tabindex="-1"></a>With a Lambda stat of 0.8028967 and a p-value of 0.0029749625, we reject H0 at α* = .01, so there is strong evidence that SO2 individually contributes significantly to group separability, adjusting for other variables.</span>
+<span id="cb18-364"><a href="#cb18-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-365"><a href="#cb18-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-366"><a href="#cb18-366" aria-hidden="true" tabindex="-1"></a><span class="fu">#### NOX</span></span>
+<span id="cb18-367"><a href="#cb18-367" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-368"><a href="#cb18-368" aria-hidden="true" tabindex="-1"></a>H0: The variable NOX has no significant effect on group separation</span>
+<span id="cb18-369"><a href="#cb18-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-370"><a href="#cb18-370" aria-hidden="true" tabindex="-1"></a>Ha: The variable NOX has a significant effect on group separation</span>
+<span id="cb18-371"><a href="#cb18-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-372"><a href="#cb18-372" aria-hidden="true" tabindex="-1"></a>With a Lambda stat of 0.9394342 and a p-value of 0.1909672716, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that NOX, individually, contributes significantly to group separation adjusting for other variables.</span>
+<span id="cb18-373"><a href="#cb18-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-374"><a href="#cb18-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-375"><a href="#cb18-375" aria-hidden="true" tabindex="-1"></a><span class="fu">#### EDUC</span></span>
+<span id="cb18-376"><a href="#cb18-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-377"><a href="#cb18-377" aria-hidden="true" tabindex="-1"></a>H0: The variable EDUC has no significant effect on group separation</span>
+<span id="cb18-378"><a href="#cb18-378" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-379"><a href="#cb18-379" aria-hidden="true" tabindex="-1"></a>Ha: The variable EDUC has a significant effect on group separation</span>
+<span id="cb18-380"><a href="#cb18-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-381"><a href="#cb18-381" aria-hidden="true" tabindex="-1"></a>With a Lambda stat of 0.9559307 and a p-value of 0.3029006436, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that EDUC, individually, contributes significantly to group separation adjusting for other variables.</span>
+<span id="cb18-382"><a href="#cb18-382" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-383"><a href="#cb18-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-384"><a href="#cb18-384" aria-hidden="true" tabindex="-1"></a><span class="fu">#### PRECIP</span></span>
+<span id="cb18-385"><a href="#cb18-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-386"><a href="#cb18-386" aria-hidden="true" tabindex="-1"></a>H0: The variable PRECIP has no significant effect on group separation</span>
+<span id="cb18-387"><a href="#cb18-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-388"><a href="#cb18-388" aria-hidden="true" tabindex="-1"></a>Ha: The variable PRECIP has a significant effect on group separation</span>
+<span id="cb18-389"><a href="#cb18-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-390"><a href="#cb18-390" aria-hidden="true" tabindex="-1"></a>With a Lambda stat of 0.9948165 and a p-value of 0.8713416049, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that PRECIP, individually, contributes significantly to group separation adjusting for other variables.</span>
+<span id="cb18-391"><a href="#cb18-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-392"><a href="#cb18-392" aria-hidden="true" tabindex="-1"></a><span class="fu">### C.2 Part 4</span></span>
+<span id="cb18-393"><a href="#cb18-393" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-394"><a href="#cb18-394" aria-hidden="true" tabindex="-1"></a>*Produce a plot of the first two linear discriminant functions. Be sure to include this plot in the report. Comment on the plot with regard to how well the discriminant functions separate the groups in the data. NOTE: When using the corresponding function, the system will wait for you to click on the graph to place a legend for the symbols used in the graph. Be sure to click on a location that is empty for the legend placement. If the legend placement causes your system to lock up, modify the original function and remove the code that inserts the legend. In that event, you can manually insert your own legend by annotating the graph *</span>
+<span id="cb18-395"><a href="#cb18-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-398"><a href="#cb18-398" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-399"><a href="#cb18-399" aria-hidden="true" tabindex="-1"></a><span class="fu">discr.plot</span>(pollution[,<span class="sc">-</span><span class="dv">1</span>], pollution[[<span class="dv">1</span>]])</span>
+<span id="cb18-400"><a href="#cb18-400" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-401"><a href="#cb18-401" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-402"><a href="#cb18-402" aria-hidden="true" tabindex="-1"></a>LD1 seems to separate a decent amount of the pluses and circles when looking at the projection onto LD1. However, there still seems to be some overlap between a few of the plues, a few of the circles, and many of the triangles.</span>
+<span id="cb18-403"><a href="#cb18-403" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-404"><a href="#cb18-404" aria-hidden="true" tabindex="-1"></a>LD2 does not separate the groups well at all.</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

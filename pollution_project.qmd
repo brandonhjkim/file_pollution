@@ -1,6 +1,6 @@
 ---
 title: "419 Final Project"
-author: "Justin Koida, PUT NAMES"
+author: "Justin Koida, Brandon Kim"
 format:
   html:
     self-contained: true
@@ -177,27 +177,77 @@ knitr::kable(pollution, caption = "Pollution")
 
 # Section B
 
-Interactive Histograms: 
+To make our analysis easier for predictor-wise visualizations, we decided to develop an interactive RShiny applet to display all of the appropriate histograms as needed: 
+
+## Interactive Histograms: 
 
 ```{r}
 knitr::include_app('https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/', height = '925px')
 ```
 
-PCA Clusters:
+(Please keep in note of the varying x axis per distribution)
+
+**Precipitation:** Whilst the centers of the precipitations distributions across all groups are relatively similar (considering their standard deviations), it's interesting to note that the group 1 has considerably higher variance than the other groups. 
+
+**Education Level:** All the groups distributions for education level are really similar. This is reflected in the overall distribution's shape looking very similar to each groups. 
+
+**Nonwhite %:** Group 1 has significantly smaller nonwhite % in comparison to the other two groups. It might seem like group 2 and group 3 are also very different, but when considering their standard deviations, it's more marginal than it seems. All 3 distributions seem to all show some right skew as well. 
+
+**Nitrogen Oxides:** Group 1 has massive outliers, skewing the mean and standard deviation to being way larger than they seem. Despite this, all 3 distributions have relatively high variance in consideration to their mean and median. 
+
+**Sulfur Dioxides:** Despite all distributions having roughly similar shape, group 3 has significantly larger spread compared to the other two groups. This high variance seems to really affect its mean and median. 
+
+Overall, it seems like group 1 has massively different characteristics than the other two groups. We can see if this is the case visually through Principle Component Analysis, mapping the points on a 2 dimensional plane with PC1 and PC2 as its axis. 
+
+## PCA Clusters:
 
 ```{r}
-recipe(~., data = select(pollution, -MORTRANK)) %>%
+prepped_recipe_pca <- recipe(~., data = select(pollution, -MORTRANK)) %>%
   step_normalize(all_numeric_predictors()) %>%  
   step_pca(all_numeric_predictors(), num_comp = 2) %>%
-  prep() %>%
+  prep() 
+
+pca_data <- prepped_recipe_pca %>%
   bake(new_data = select(pollution, -MORTRANK)) %>%
-  mutate(MORTANK = pollution$MORTRANK) %>%
+  mutate(MORTANK = pollution$MORTRANK) 
+
+pca_data %>%
   ggplot(aes(x=PC1, y=PC2, color=MORTANK)) +
     geom_point() +
     theme_bw() +
-    labs(title = 'PCA Clusters')
+    labs(title = 'PCA Groupings')
 ```
 
+As hypothesized, group 1 seems to have better separation from the other 2 groups. This might assist LDA into developing a function that can separate group 1 away from the other two. We can do a more formal examination with the k-means algorithm. To ensure reproducibility, we will set the starting centroids as the original scaled means of the groups. 
+
+## Scaled K-means
+
+```{r}
+scaled_predictors <- pollution %>%
+  mutate(across(PRECIP:`SO2`, ~ (. - mean(.)/sd(.))))
+
+starting_points <- scaled_predictors %>%
+  group_by(MORTRANK) %>%
+  summarize(across(PRECIP:`SO2`, list(mean = mean))) %>%
+  select(-MORTRANK) %>%
+  as.matrix()
+
+kmeans_result <- kmeans(select(scaled_predictors, -MORTRANK), 
+                        centers = starting_points, 
+                        iter.max = 100)
+
+scaled_predictors %>%
+  mutate(kmeans_groups = kmeans_result$cluster) %>%
+  ggplot(aes(x=as.factor(MORTRANK), fill=as.factor(kmeans_groups))) +
+    geom_bar(position = 'fill') +
+    scale_fill_manual(values = c('purple', 'orange', 'brown')) +
+    labs(x = 'MORTRANK Group', y = '', 
+         title = 'K-Means fit vs. Actual MORTRANK Groups', 
+         fill = 'K-Means Group') +
+    theme_bw()
+```
+
+Unfortunately, the k-means algorithm does not fit the data well. Ideally, we would have 3 k-means groups of equal sizes that align with the MORTRANK groups well. However, k-means does not have a restriction on group sizes, so it seems as if 1 group is dominating. This k-means group was the original group that started with the centroid positioned at the 1st MORTRANK group's mean values, which indicates that the other two initial centroids were not able to diverage and capture their points properly. This is probably because those two initial centroids were far closer to each other in terms of proxmity to points than the dominant intial centroid. This aligns with our principle component analysis, as group 1 has a far clearer separation than group 2 and 3. 
 
 # Section C
 
