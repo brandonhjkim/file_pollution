@@ -91,9 +91,11 @@ Libraries:
 ```{r Package Loading}
 #| output: false
 #| warning: false 
+#| message: FALSE 
 
 library(tidyverse)
 library(tidymodels)
+library(MASS)
 ```
 
 Custom Functions: 
@@ -179,9 +181,6 @@ z[group == unique(group)[i],2], pch = i)
 }
 
 lin.class <- function(Y,group){
-  # Install MASS package if not already installed
-  if (!require("MASS")) install.packages("MASS")
-  library(MASS)
   Y <- data.matrix(Y)
   group <- as.factor(group)
   p <- ncol(Y)
@@ -200,8 +199,6 @@ lin.class <- function(Y,group){
 }
 
 rates <- function(data,group,method="l") {
-  if (!require("MASS")) install.packages("MASS")
-  library(MASS)
   data <- as.matrix(data)
   group <- as.matrix(group)
   da.obj <- lda(data,group)
@@ -284,13 +281,13 @@ Overall, it seems like group 1 has massively different characteristics than the 
 ## PCA Clusters
 
 ```{r}
-prepped_recipe_pca <- recipe(~., data = select(pollution, -MORTRANK)) %>%
+prepped_recipe_pca <- recipe(~., data = dplyr::select(pollution, -MORTRANK)) %>%
   step_normalize(all_numeric_predictors()) %>%  
   step_pca(all_numeric_predictors(), num_comp = 2) %>%
   prep() 
 
 pca_data <- prepped_recipe_pca %>%
-  bake(new_data = select(pollution, -MORTRANK)) %>%
+  bake(new_data = dplyr::select(pollution, -MORTRANK)) %>%
   mutate(MORTANK = pollution$MORTRANK) 
 
 pca_data %>%
@@ -311,10 +308,10 @@ scaled_predictors <- pollution %>%
 starting_points <- scaled_predictors %>%
   group_by(MORTRANK) %>%
   summarize(across(PRECIP:`SO2`, list(mean = mean))) %>%
-  select(-MORTRANK) %>%
+  dplyr::select(-MORTRANK) %>%
   as.matrix()
 
-kmeans_result <- kmeans(select(scaled_predictors, -MORTRANK), 
+kmeans_result <- kmeans(dplyr::select(scaled_predictors, -MORTRANK), 
                         centers = starting_points, 
                         iter.max = 100)
 
@@ -486,7 +483,6 @@ LD2 does not separate the groups well at all.
 For classification analysis, we will use the four most important variables, as determined by the discriminant analysis. These variables are: NONWHITE, SO2, NOX, and EDUC.
 
 ```{r}
-#| message: FALSE 
 pollution<-as.data.frame(pollution)
 lin.class(pollution[,-c(1,2)],pollution[,1])
 ```
@@ -534,7 +530,7 @@ The predicted classification of Observation #1 is MORTRANK Group 1, because this
 ```{r}
 #| message: FALSE
 pol_rates<-rates(pollution[,-c(1,2)],pollution[,1])
-knitr::kable(pol_rates[[4]], caption = "Confusion Matrix")
+knitr::kable(pol_rates[[4]], caption = "Confusion Matrix", row.names = T)
 ```
 
 Correct Classification Rate: 
