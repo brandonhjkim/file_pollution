@@ -381,7 +381,7 @@ LD2: 4, 3, 1, 5, 2 --\> NOX, NONWHITE, PRECIP, SO2, EDUC
 *Carry out tests of significance for the discriminant functions. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test.*
 
 ```{r}
-discr.sig(pollution[,-1], pollution[[1]])
+knitr::kable(discr.sig(pollution[,-1], pollution[[1]]),row.names = T)
 ```
 
 let $\alpha_1, \alpha_2, ..., \alpha_s$ be the population discriminant functions
@@ -415,7 +415,7 @@ We have sufficient evidence to conclude α1 significantly contributes to group s
 *Carry out tests of significance of each non-grouping variable, after adjusting the presence of other non-grouping variables. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test.*
 
 ```{r}
-partial.F(pollution[,-1], pollution[[1]])
+knitr::kable(partial.F(pollution[,-1], pollution[[1]]), row.names=T)
 ```
 
 Using $\alpha^* = .05/5 = .01$
@@ -483,8 +483,9 @@ LD2 does not separate the groups well at all.
 For classification analysis, we will use the four most important variables, as determined by the discriminant analysis. These variables are: NONWHITE, SO2, NOX, and EDUC.
 
 ```{r}
-pollution<-as.data.frame(pollution)
-lin.class(pollution[,-c(1,2)],pollution[,1])
+pollution <- as.data.frame(pollution)
+linclass <- lin.class(pollution[,-c(1,2)],pollution[,1])
+linclass
 ```
 
 The linear classification functions are specified below:
@@ -501,25 +502,11 @@ $$L3(y) = 19.30087y_1 + 0.3883845y_2 - 0.11797003y_3 + 0.09583682y_4 - 108.3684$
 
 ```{r}
 obs1<-pollution[1,-c(1,2)]
+lincomb <- linclass$coefs %*% t(obs1) + linclass$c.0
+rownames(lincomb) <- c('L1', 'L2', 'L3')
+knitr::kable(lincomb, row.names = T)
 ```
 
-L1:
-
-```{r}
-20.47375*obs1[1,1]+0.1161389*obs1[1,2]-0.09341959*obs1[1,3]+0.06391368*obs1[1,4]-116.6708 
-```
-
-L2:
-
-```{r}
-19.89371*obs1[1,1]+0.2146811*obs1[1,2]-0.11154897*obs1[1,3]+0.07789059*obs1[1,4]-111.0938 # L2 
-```
-
-L3: 
-
-```{r}
-19.30087*obs1[1,1]+0.3883845*obs1[1,2]-0.11797003*obs1[1,3]+0.09583682*obs1[1,4]-108.3684 # L3 
-```
 
 The predicted classification of Observation #1 is MORTRANK Group 1, because this corresponds to the linear classification function that resulted in the largest value $L1(y)=130.66$. Observation #1 belongs in Group 1, so the prediction is correct.
 
