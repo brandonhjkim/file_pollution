@@ -64,7 +64,7 @@ code-fold: true
 
 <!-- --- -->
 
-# loading in stuff
+# Set Up 
 
 ## Getting stuff running
 
@@ -76,15 +76,17 @@ First, you need to have quarto installed.
 
 Once you have quarto, here are the required packages this project uses: tidyverse and knitr. You can install these by running the following commands in the R studio console
 
-install.packages("tidyverse")
+`install.packages("tidyverse")`
 
-install.packages("knitr")
+`install.packages("knitr")`
 
 In order to render the pdf, you will need to download tinytex to your local device by running the following command in the terminal.
 
-quarto install tinytex
+`quarto install tinytex`
 
 Once all of this is done, should be good to go.
+
+Libraries: 
 
 ```{r Package Loading}
 #| output: false
@@ -93,6 +95,8 @@ Once all of this is done, should be good to go.
 library(tidyverse)
 library(tidymodels)
 ```
+
+Custom Functions: 
 
 ```{r Custom R functions loading}
 #| output: false
@@ -214,32 +218,50 @@ rates <- function(data,group,method="l") {
 }
 ```
 
-```{r load in data}
-#| output: false
-pollution <- read_csv(here::here("pollution_419.csv"))
-```
+The Data: 
 
-```{r fixing data}
+```{r load in data}
+#| message: false
+pollution <- read_csv(here::here("pollution_419.csv"))
+
 pollution <- pollution %>%
   mutate(MORTRANK = as.factor(MORTRANK))
-```
 
-```{r display data}
 knitr::kable(pollution, caption = "Pollution")
-
 ```
 
 # Section A
 
-```{r}
+## Overview of the Dataset
 
-```
+The dataset used in this project contains environmental and demographic data collected from 60 metropolitan areas in the United States. The primary focus of the dataset is to analyze factors associated with mortality rates in these areas. The total age-adjusted mortality rate from all causes (MORT) represents the number of deaths per 100,000 people. Although MORT itself is not included as a variable in the dataset, a grouping variable, **MORTRANK**, is derived from it. This grouping allows for classification into three categories:
+
+- **MORTRANK = 1**: Areas where mortality rates are below 912 deaths per 100,000 people.
+- **MORTRANK = 2**: Areas where mortality rates range between 912 and 968 deaths per 100,000 people.
+- **MORTRANK = 3:** Areas where mortality rates are 968 or higher per 100,000 people.
+
+The purpose of this project is to analyze whether environmental and socioeconomic factors contribute to higher or lower mortality rates across different metropolitan regions.
+
+## Description of Variables
+
+The dataset includes the following variables:
+
+- **MORTRANK** *(Grouping Variable)*: Represents the classification of metropolitan areas based on their mortality rates.
+- **PRECIP** *(Mean Annual Precipitation in inches)*: This variable measures the average annual precipitation in each metropolitan area. Higher or lower precipitation levels might influence environmental factors related to health.
+- **EDUC** *(Median Number of School Years Completed for Individuals Aged 25 and Older)*: This represents the median education level in each area, which could be a key indicator of socioeconomic status and access to health-related information.
+- **NONWHITE** *(Percentage of Population That is Non-White)*: This variable represents the racial composition of each metropolitan area. Demographic factors may be correlated with health outcomes due to social determinants of health.
+- **NOX** *(Relative Pollution Potential of All Nitrogen Oxides)*: This metric represents the estimated pollution impact of nitrogen oxides in each metropolitan area. Higher NOX levels might be associated with respiratory and cardiovascular diseases.
+- **SO2** *(Relative Pollution Potential of Sulfur Dioxide)*: This measures the estimated pollution potential of sulfur dioxide. Like NOX, higher SO2 levels could indicate poorer air quality, potentially leading to adverse health outcomes.
+
+## Purpose of the Analysis
+
+The goal of this project is to investigate the relationships between these environmental and socioeconomic variables and mortality rates. Specifically, we aim to determine which factors might contribute to higher or lower mortality rankings (MORTRANK). By analyzing these variables, we can assess whether pollution levels, education, racial composition, and climate factors are significant determinants of health outcomes in urban settings.
 
 # Section B
 
 To make our analysis easier for predictor-wise visualizations, we decided to develop an interactive RShiny applet to display all of the appropriate histograms as needed:
 
-## Interactive Histograms:
+## Interactive Histograms
 
 ```{r}
 knitr::include_app('https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/', height = '925px')
@@ -259,7 +281,7 @@ knitr::include_app('https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_
 
 Overall, it seems like group 1 has massively different characteristics than the other two groups. We can see if this is the case visually through Principle Component Analysis, mapping the points on a 2 dimensional plane with PC1 and PC2 as its axis.
 
-## PCA Clusters:
+## PCA Clusters
 
 ```{r}
 prepped_recipe_pca <- recipe(~., data = select(pollution, -MORTRANK)) %>%
@@ -307,7 +329,7 @@ scaled_predictors %>%
     theme_bw()
 ```
 
-Unfortunately, the k-means algorithm does not fit the data well. Ideally, we would have 3 k-means groups of equal sizes that align with the MORTRANK groups well. However, k-means does not have a restriction on group sizes, so it seems as if 1 group is dominating. This k-means group was the original group that started with the centroid positioned at the 1st MORTRANK group's mean values, which indicates that the other two initial centroids were not able to diverage and capture their points properly. This is probably because those two initial centroids were far closer to each other in terms of proxmity to points than the dominant intial centroid. This aligns with our principle component analysis, as group 1 has a far clearer separation than group 2 and 3.
+Unfortunately, the k-means algorithm does not fit the data well. Ideally, we would have 3 k-means groups of equal sizes that align with the MORTRANK groups well. However, k-means does not have a restriction on group sizes, so it seems as if 1 group is dominating. This k-means group was the original group that started with the centroid positioned at the 1st MORTRANK group's mean values, which indicates that the other two initial centroids were not able to diverege and capture their points properly. This is probably because those two initial centroids were far closer to each other in terms of proximity to points than the dominant intial centroid. This aligns with our principle component analysis, as group 1 has a far clearer separation than group 2 and 3.
 
 # Section C
 
@@ -321,8 +343,16 @@ knitr::kable(cor_matrix, caption = "Correlation Matrix of Pollution Variables")
 
 The most correlation we see between variables is EDUC and PRECIP with a correlation of -.4904. This is not correlated significantly, so we will keep all the variables in this data set.
 
+Additionally, below is a heatmap as well as a correlation scatterplot of all of the independent variables: 
+
 ```{r heatmap}
 heatmap(cor_matrix)
+```
+
+```{r}
+#| message: FALSE 
+GGally::ggpairs(pollution[,c('PRECIP','EDUC','NONWHITE','NOX','SO2')]) +
+  theme_bw()
 ```
 
 ## C.2
@@ -331,7 +361,7 @@ heatmap(cor_matrix)
 
 *Write the complete form of all discriminant functions. Be sure to use standardized coefficients. Based on these coefficients, produce a ranking of variable importance (in the presence of other variables).*
 
-To start, we have k = 3 groups and p = 6 variables, so we have min(p, k-1) = 2 discriminant functions.
+To start, we have $k = 3$ groups and $p = 6$ variables, so we have $min(p, k-1) = 2$ discriminant functions.
 
 ```{r}
 discrim(pollution[,-1], pollution[[1]])
@@ -339,9 +369,9 @@ discrim(pollution[,-1], pollution[[1]])
 
 Here is the complete form of both discriminant functions:
 
-LD1 = -0.1722439y1 + 0.7507216y2 - 1.7675389y3 + 0.9193970y4 - 1.6834803y5
+$$LD1 = -0.1722439y_1 + 0.7507216y_2 - 1.7675389y_3 + 0.9193970y_4 - 1.6834803y_5$$
 
-LD2 = -5.0820234y1 + 0.3131456y2 + 5.2476849y3 + 9.0326716y4 - 1.4476618y5
+$$LD2 = -5.0820234y_1 + 0.3131456y_2 + 5.2476849y_3 + 9.0326716y_4 - 1.4476618y_5$$
 
 For the importance of variables based on the standardized coefficients, we have
 
@@ -357,31 +387,31 @@ LD2: 4, 3, 1, 5, 2 --\> NOX, NONWHITE, PRECIP, SO2, EDUC
 discr.sig(pollution[,-1], pollution[[1]])
 ```
 
-let α1, α2, ..., αs be the population discriminant functions
+let $\alpha_1, \alpha_2, ..., \alpha_s$ be the population discriminant functions
 
 For LD1,
 
-H0: α1 = α2 = 0 \<------- where 0 is the 0 vector
+$H_0: \alpha_1 = \alpha_2 = 0$ \<------- where 0 is the 0 vector
 
-Ha: at least one α1 or α2 != 0
+$Ha: \text{at least one of } \alpha_1, \alpha_2  \neq 0$
 
-α\* = .05/2 = .025
+$\alpha^* = .05/2 = .025$
 
-With a p-value of 1.799089e-06, we reject the Null Hypothesis at α\* = .025, so we conclude that we have significant evidence that at least one α1, α2 != 0 at the α\* = .025 level.
+With a p-value of 1.799089e-06, we reject the Null Hypothesis at $\alpha^* = .025$, so we conclude that we have significant evidence that at least one of $\alpha_1, \alpha_2 \neq 0$ at the $\alpha^* = .025$ level.
 
 For LD2,
 
-H0: α2 = 0 \<------- where 0 is the 0 vector
+$H_0: \alpha_2 = 0$ \<------- where 0 is the 0 vector
 
-Ha: α2 != 0
+$H_a: \alpha_2 \neq 0$
 
-α\* = .05/2 = .025
+$\alpha^* = .05/2 = .025$
 
-With a p-value of 7.081668e-01, we do not reject the Null Hypothesis at α\* = .025, so we do not have significant evidence to suggest that α2, the second linear discriminant function, has a significant impact on group separability.
+With a p-value of 7.081668e-01, we do not reject the Null Hypothesis at $\alpha^* = .025$, so we do not have significant evidence to suggest that $\alpha_2$, the second linear discriminant function, has a significant impact on group separability.
 
 Conclude:
 
-We have sufficient evidence to conclude α1 significantly contributes to group separability at α\* = .025. We have insufficient evidence to conclude α2 significantly contributes to group separability at α\* = .025.
+We have sufficient evidence to conclude α1 significantly contributes to group separability at $\alpha^* = .025$. We have insufficient evidence to conclude α2 significantly contributes to group separability at $\alpha^* = .025$.
 
 ### C.2 Part 3
 
@@ -391,49 +421,49 @@ We have sufficient evidence to conclude α1 significantly contributes to group s
 partial.F(pollution[,-1], pollution[[1]])
 ```
 
-Using α\* = .05/5 = .01
+Using $\alpha^* = .05/5 = .01$
 
 We will check variable importance for each non-grouping variable after adjusting for the presence of the other non-grouping variables.
 
 #### NONWHITE
 
-H0: The variable NONWHITE has no significant effect on group separation
+$H_0:$ The variable NONWHITE has no significant effect on group separation
 
-Ha: The variable NONWHITE has a significant effect on group separation
+$H_a:$ The variable NONWHITE has a significant effect on group separation
 
-With a Lambda stat of 0.7351297 and a p-value of 0.0002875051, we reject H0 at α\* = .01, so there is strong evidence that NONWHITE individually contributes significantly to group separability, adjusting for other variables.
+With a Lambda stat of 0.7351297 and a p-value of 0.0002875051, we reject the null hypothesis at $\alpha^* = .01$, so there is strong evidence that NONWHITE individually contributes significantly to group separability, adjusting for other variables.
 
 #### SO2
 
-H0: The variable SO2 has no significant effect on group separation
+$H_0:$ The variable SO2 has no significant effect on group separation
 
-Ha: The variable SO2 has a significant effect on group separation
+$H_a:$ The variable SO2 has a significant effect on group separation
 
-With a Lambda stat of 0.8028967 and a p-value of 0.0029749625, we reject H0 at α\* = .01, so there is strong evidence that SO2 individually contributes significantly to group separability, adjusting for other variables.
+With a Lambda stat of 0.8028967 and a p-value of 0.0029749625, we reject the null hypothesis at $\alpha^* = .01$, so there is strong evidence that SO2 individually contributes significantly to group separability, adjusting for other variables.
 
 #### NOX
 
-H0: The variable NOX has no significant effect on group separation
+$H_0:$ The variable NOX has no significant effect on group separation
 
-Ha: The variable NOX has a significant effect on group separation
+$H_a:$ The variable NOX has a significant effect on group separation
 
-With a Lambda stat of 0.9394342 and a p-value of 0.1909672716, we do not reject H0 at α\* = .01, and so there is insufficient evidence to conclude that NOX, individually, contributes significantly to group separation adjusting for other variables.
+With a Lambda stat of 0.9394342 and a p-value of 0.1909672716, we do not reject the null hypothesis at $\alpha^* = .01$, and so there is insufficient evidence to conclude that NOX, individually, contributes significantly to group separation adjusting for other variables.
 
 #### EDUC
 
-H0: The variable EDUC has no significant effect on group separation
+$H_0:$ The variable EDUC has no significant effect on group separation
 
-Ha: The variable EDUC has a significant effect on group separation
+$H_a:$ The variable EDUC has a significant effect on group separation
 
-With a Lambda stat of 0.9559307 and a p-value of 0.3029006436, we do not reject H0 at α\* = .01, and so there is insufficient evidence to conclude that EDUC, individually, contributes significantly to group separation adjusting for other variables.
+With a Lambda stat of 0.9559307 and a p-value of 0.3029006436, we do not reject the null hypothesis at $\alpha^* = .01$, and so there is insufficient evidence to conclude that EDUC, individually, contributes significantly to group separation adjusting for other variables.
 
 #### PRECIP
 
-H0: The variable PRECIP has no significant effect on group separation
+$H_0:$ The variable PRECIP has no significant effect on group separation
 
-Ha: The variable PRECIP has a significant effect on group separation
+$H_a:$ The variable PRECIP has a significant effect on group separation
 
-With a Lambda stat of 0.9948165 and a p-value of 0.8713416049, we do not reject H0 at α\* = .01, and so there is insufficient evidence to conclude that PRECIP, individually, contributes significantly to group separation adjusting for other variables.
+With a Lambda stat of 0.9948165 and a p-value of 0.8713416049, we do not reject the null hypothesis at $\alpha^* = .01$, and so there is insufficient evidence to conclude that PRECIP, individually, contributes significantly to group separation adjusting for other variables.
 
 ### C.2 Part 4
 
@@ -456,17 +486,18 @@ LD2 does not separate the groups well at all.
 For classification analysis, we will use the four most important variables, as determined by the discriminant analysis. These variables are: NONWHITE, SO2, NOX, and EDUC.
 
 ```{r}
+#| message: FALSE 
 pollution<-as.data.frame(pollution)
 lin.class(pollution[,-c(1,2)],pollution[,1])
 ```
 
 The linear classification functions are specified below:
 
-L1(y) = 20.47375y1 + 0.1161389y2 - 0.09341959y3 + 0.06391368y4 - 116.6708
+$$L1(y) = 20.47375y_1 + 0.1161389y_2 - 0.09341959y_3 + 0.06391368y_4 - 116.6708 $$
 
-L2(y) = 19.89371y1 + 0.2146811y2 - 0.11154897y3 + 0.07789059y4 - 111.0938
+$$L2(y) = 19.89371y_1 + 0.2146811y_2 - 0.11154897y_3 + 0.07789059y_4 - 111.0938$$
 
-L3(y) = 19.30087y1 + 0.3883845y2 - 0.11797003y3 + 0.09583682y4 - 108.3684
+$$L3(y) = 19.30087y_1 + 0.3883845y_2 - 0.11797003y_3 + 0.09583682y_4 - 108.3684$$
 
 ### C.3 Part 2
 
@@ -474,21 +505,50 @@ L3(y) = 19.30087y1 + 0.3883845y2 - 0.11797003y3 + 0.09583682y4 - 108.3684
 
 ```{r}
 obs1<-pollution[1,-c(1,2)]
-L1<-20.47375*obs1[1,1]+0.1161389*obs1[1,2]-0.09341959*obs1[1,3]+0.06391368*obs1[1,4]-116.6708
-L2<-19.89371*obs1[1,1]+0.2146811*obs1[1,2]-0.11154897*obs1[1,3]+0.07789059*obs1[1,4]-111.0938
-L3<-19.30087*obs1[1,1]+0.3883845*obs1[1,2]-0.11797003*obs1[1,3]+0.09583682*obs1[1,4]-108.3684
 ```
 
-The predicted classification of Observation #1 is MORTRANK Group 1, because this corresponds to the linear classification function that resulted in the largest value \[L1(y)=130.66\]. Observation #1 belongs in Group 1, so the prediction is correct.
+L1:
+
+```{r}
+20.47375*obs1[1,1]+0.1161389*obs1[1,2]-0.09341959*obs1[1,3]+0.06391368*obs1[1,4]-116.6708 
+```
+
+L2:
+
+```{r}
+19.89371*obs1[1,1]+0.2146811*obs1[1,2]-0.11154897*obs1[1,3]+0.07789059*obs1[1,4]-111.0938 # L2 
+```
+
+L3: 
+
+```{r}
+19.30087*obs1[1,1]+0.3883845*obs1[1,2]-0.11797003*obs1[1,3]+0.09583682*obs1[1,4]-108.3684 # L3 
+```
+
+The predicted classification of Observation #1 is MORTRANK Group 1, because this corresponds to the linear classification function that resulted in the largest value $L1(y)=130.66$. Observation #1 belongs in Group 1, so the prediction is correct.
 
 ### C.3 Part 3
 
 *Based on linear classification functions you generated, provide the corresponding “Confusion Matrix”, Apparent Error Rate, and Apparent Correct Classification Rate. Comment on how well the linear classification functions are classifying observations.*
 
 ```{r}
+#| message: FALSE
 pol_rates<-rates(pollution[,-c(1,2)],pollution[,1])
 knitr::kable(pol_rates[[4]], caption = "Confusion Matrix")
 ```
+
+Correct Classification Rate: 
+
+```{r}
+pol_rates$`Correct Class Rate`
+```
+
+Error Rate: 
+
+```{r}
+pol_rates$`Error Rate`
+```
+
 
 Apparent Error Rate (AER): 0.333
 Apparent Correct Classification Rate (ACCR): 0.667
@@ -496,3 +556,4 @@ Apparent Correct Classification Rate (ACCR): 0.667
 When taking into consideration racial demographics (NONWHITE), pollution (SO2 and NOX), and education level (EDU), the linear classification functions assign observations to the correct age-adjusted mortality rank (MORTRANK) 66.7% of the time and assign them to an incorrect group 33.3%. This means that approximately 1 out of every 3 classifications will be incorrect.
 
 # Section D
+
