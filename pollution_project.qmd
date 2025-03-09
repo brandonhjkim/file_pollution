@@ -17,28 +17,51 @@ code-tools: true
 echo: true
 code-fold: true
 ---
+
 <!-- --- -->
+
 <!-- title: "419 Final Project" -->
+
 <!-- author: "Justin Koida, PUT NAMES" -->
+
 <!-- format:  -->
+
 <!--   html: -->
+
 <!--     mainfont: "Times New Roman" -->
+
 <!--     fontsize: 12pt -->
+
 <!--     engine: xelatex -->
+
 <!--     prefer-html: true -->
+
 <!--     self-contained: true -->
+
 <!--     code-fold: true -->
+
 <!--     code-tools: true -->
+
 <!--     embed-resources: true -->
+
 <!--     toc: true -->
+
 <!--     toc-depth: 2 -->
+
 <!--     toc-title: Table of Contents -->
+
 <!--     theme: lux -->
+
 <!-- editor: source -->
+
 <!-- embed-resources: true -->
+
 <!-- code-tools: true -->
+
 <!-- echo: true -->
+
 <!-- code-fold: true -->
+
 <!-- --- -->
 
 # loading in stuff
@@ -60,7 +83,6 @@ install.packages("knitr")
 In order to render the pdf, you will need to download tinytex to your local device by running the following command in the terminal.
 
 quarto install tinytex
-
 
 Once all of this is done, should be good to go.
 
@@ -151,6 +173,45 @@ z[group == unique(group)[i],2], pch = i)
 #if(is.null(leg)) leg <- as.character(unique(group))
 #legend(locator(1),legend = leg,pch=1:length(unique(group)))
 }
+
+lin.class <- function(Y,group){
+  # Install MASS package if not already installed
+  if (!require("MASS")) install.packages("MASS")
+  library(MASS)
+  Y <- data.matrix(Y)
+  group <- as.factor(group)
+  p <- ncol(Y)
+  m1 <- manova(Y ~ group)
+  nu.e <- m1$df
+  nu.h <- m1$rank-1
+  Sp <- summary(m1)$SS$Residual/(nu.e)
+  cio <- 1:m1$rank
+  c.mat <- matrix(nrow=m1$rank,ncol=p,0)
+  for (i in 1:m1$rank) {
+    cio[i] <- -.5*t(lda(Y,group)$means[i,])%*%solve(Sp)%*%
+      lda(Y,group)$means[i,]
+    c.mat[i,] <- t(lda(Y,group)$means[i,])%*%solve(Sp)
+  }
+  return(list("coefs"=c.mat,"c.0"=cio))
+}
+
+rates <- function(data,group,method="l") {
+  if (!require("MASS")) install.packages("MASS")
+  library(MASS)
+  data <- as.matrix(data)
+  group <- as.matrix(group)
+  da.obj <- lda(data,group)
+  if (method=="q") {
+    da.obj <- qda(data,group)
+    method <- "QDA"
+  }
+  tab <- table(original=group,predicted=predict(da.obj)$class)
+  if (method=="l") method <- "LDA"
+  cor.rate <- sum(predict(da.obj)$class==group)/nrow(data)
+  er.rate <- 1-cor.rate
+  return(list("Correct Class Rate"=cor.rate,"Error Rate"=er.rate,
+              "Method"=method,"Confusion Matrix"=tab))
+}
 ```
 
 ```{r load in data}
@@ -162,7 +223,6 @@ pollution <- read_csv(here::here("pollution_419.csv"))
 pollution <- pollution %>%
   mutate(MORTRANK = as.factor(MORTRANK))
 ```
-
 
 ```{r display data}
 knitr::kable(pollution, caption = "Pollution")
@@ -177,9 +237,9 @@ knitr::kable(pollution, caption = "Pollution")
 
 # Section B
 
-To make our analysis easier for predictor-wise visualizations, we decided to develop an interactive RShiny applet to display all of the appropriate histograms as needed: 
+To make our analysis easier for predictor-wise visualizations, we decided to develop an interactive RShiny applet to display all of the appropriate histograms as needed:
 
-## Interactive Histograms: 
+## Interactive Histograms:
 
 ```{r}
 knitr::include_app('https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/', height = '925px')
@@ -187,17 +247,17 @@ knitr::include_app('https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_
 
 (Please keep in note of the varying x axis per distribution)
 
-**Precipitation:** Whilst the centers of the precipitations distributions across all groups are relatively similar (considering their standard deviations), it's interesting to note that the group 1 has considerably higher variance than the other groups. 
+**Precipitation:** Whilst the centers of the precipitations distributions across all groups are relatively similar (considering their standard deviations), it's interesting to note that the group 1 has considerably higher variance than the other groups.
 
-**Education Level:** All the groups distributions for education level are really similar. This is reflected in the overall distribution's shape looking very similar to each groups. 
+**Education Level:** All the groups distributions for education level are really similar. This is reflected in the overall distribution's shape looking very similar to each groups.
 
-**Nonwhite %:** Group 1 has significantly smaller nonwhite % in comparison to the other two groups. It might seem like group 2 and group 3 are also very different, but when considering their standard deviations, it's more marginal than it seems. All 3 distributions seem to all show some right skew as well. 
+**Nonwhite %:** Group 1 has significantly smaller nonwhite % in comparison to the other two groups. It might seem like group 2 and group 3 are also very different, but when considering their standard deviations, it's more marginal than it seems. All 3 distributions seem to all show some right skew as well.
 
-**Nitrogen Oxides:** Group 1 has massive outliers, skewing the mean and standard deviation to being way larger than they seem. Despite this, all 3 distributions have relatively high variance in consideration to their mean and median. 
+**Nitrogen Oxides:** Group 1 has massive outliers, skewing the mean and standard deviation to being way larger than they seem. Despite this, all 3 distributions have relatively high variance in consideration to their mean and median.
 
-**Sulfur Dioxides:** Despite all distributions having roughly similar shape, group 3 has significantly larger spread compared to the other two groups. This high variance seems to really affect its mean and median. 
+**Sulfur Dioxides:** Despite all distributions having roughly similar shape, group 3 has significantly larger spread compared to the other two groups. This high variance seems to really affect its mean and median.
 
-Overall, it seems like group 1 has massively different characteristics than the other two groups. We can see if this is the case visually through Principle Component Analysis, mapping the points on a 2 dimensional plane with PC1 and PC2 as its axis. 
+Overall, it seems like group 1 has massively different characteristics than the other two groups. We can see if this is the case visually through Principle Component Analysis, mapping the points on a 2 dimensional plane with PC1 and PC2 as its axis.
 
 ## PCA Clusters:
 
@@ -218,7 +278,7 @@ pca_data %>%
     labs(title = 'PCA Groupings')
 ```
 
-As hypothesized, group 1 seems to have better separation from the other 2 groups. This might assist LDA into developing a function that can separate group 1 away from the other two. We can do a more formal examination with the k-means algorithm. To ensure reproducibility, we will set the starting centroids as the original scaled means of the groups. 
+As hypothesized, group 1 seems to have better separation from the other 2 groups. This might assist LDA into developing a function that can separate group 1 away from the other two. We can do a more formal examination with the k-means algorithm. To ensure reproducibility, we will set the starting centroids as the original scaled means of the groups.
 
 ## Scaled K-means
 
@@ -247,7 +307,7 @@ scaled_predictors %>%
     theme_bw()
 ```
 
-Unfortunately, the k-means algorithm does not fit the data well. Ideally, we would have 3 k-means groups of equal sizes that align with the MORTRANK groups well. However, k-means does not have a restriction on group sizes, so it seems as if 1 group is dominating. This k-means group was the original group that started with the centroid positioned at the 1st MORTRANK group's mean values, which indicates that the other two initial centroids were not able to diverage and capture their points properly. This is probably because those two initial centroids were far closer to each other in terms of proxmity to points than the dominant intial centroid. This aligns with our principle component analysis, as group 1 has a far clearer separation than group 2 and 3. 
+Unfortunately, the k-means algorithm does not fit the data well. Ideally, we would have 3 k-means groups of equal sizes that align with the MORTRANK groups well. However, k-means does not have a restriction on group sizes, so it seems as if 1 group is dominating. This k-means group was the original group that started with the centroid positioned at the 1st MORTRANK group's mean values, which indicates that the other two initial centroids were not able to diverage and capture their points properly. This is probably because those two initial centroids were far closer to each other in terms of proxmity to points than the dominant intial centroid. This aligns with our principle component analysis, as group 1 has a far clearer separation than group 2 and 3.
 
 # Section C
 
@@ -258,7 +318,8 @@ cor_matrix <- round(cor(pollution[,-1]), 6)
 knitr::kable(cor_matrix, caption = "Correlation Matrix of Pollution Variables")
 
 ```
-The most correlation we see between variables is EDUC and PRECIP with a correlation of -.4904. This is not correlated significantly, so we will keep all the variables in this data set. 
+
+The most correlation we see between variables is EDUC and PRECIP with a correlation of -.4904. This is not correlated significantly, so we will keep all the variables in this data set.
 
 ```{r heatmap}
 heatmap(cor_matrix)
@@ -268,7 +329,6 @@ heatmap(cor_matrix)
 
 ### C.2 Part 1
 
-
 *Write the complete form of all discriminant functions. Be sure to use standardized coefficients. Based on these coefficients, produce a ranking of variable importance (in the presence of other variables).*
 
 To start, we have k = 3 groups and p = 6 variables, so we have min(p, k-1) = 2 discriminant functions.
@@ -276,6 +336,7 @@ To start, we have k = 3 groups and p = 6 variables, so we have min(p, k-1) = 2 d
 ```{r}
 discrim(pollution[,-1], pollution[[1]])
 ```
+
 Here is the complete form of both discriminant functions:
 
 LD1 = -0.1722439y1 + 0.7507216y2 - 1.7675389y3 + 0.9193970y4 - 1.6834803y5
@@ -284,54 +345,55 @@ LD2 = -5.0820234y1 + 0.3131456y2 + 5.2476849y3 + 9.0326716y4 - 1.4476618y5
 
 For the importance of variables based on the standardized coefficients, we have
 
-LD1: 3, 5, 4, 2, 1 --> NONWHITE, SO2, NOX, EDUC, PRECIP
+LD1: 3, 5, 4, 2, 1 --\> NONWHITE, SO2, NOX, EDUC, PRECIP
 
-LD2: 4, 3, 1, 5, 2 --> NOX, NONWHITE, PRECIP, SO2, EDUC
+LD2: 4, 3, 1, 5, 2 --\> NOX, NONWHITE, PRECIP, SO2, EDUC
 
 ### C.2 Part 2
- 
+
 *Carry out tests of significance for the discriminant functions. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test.*
 
 ```{r}
 discr.sig(pollution[,-1], pollution[[1]])
 ```
+
 let α1, α2, ..., αs be the population discriminant functions
 
 For LD1,
 
-H0: α1 = α2 = 0 <------- where 0 is the 0 vector
+H0: α1 = α2 = 0 \<------- where 0 is the 0 vector
 
 Ha: at least one α1 or α2 != 0
 
-α* = .05/2 = .025
+α\* = .05/2 = .025
 
-With a p-value of 1.799089e-06, we reject the Null Hypothesis at α* = .025, so we conclude that we have significant evidence that at least one α1, α2 != 0 at the α* = .025 level.
-
+With a p-value of 1.799089e-06, we reject the Null Hypothesis at α\* = .025, so we conclude that we have significant evidence that at least one α1, α2 != 0 at the α\* = .025 level.
 
 For LD2,
 
-H0: α2 = 0 <------- where 0 is the 0 vector
+H0: α2 = 0 \<------- where 0 is the 0 vector
 
 Ha: α2 != 0
 
-α* = .05/2 = .025
+α\* = .05/2 = .025
 
-With a p-value of 7.081668e-01, we do not reject the Null Hypothesis at α* = .025, so we do not have significant evidence to suggest that α2, the second linear discriminant function, has a significant impact on group separability.
+With a p-value of 7.081668e-01, we do not reject the Null Hypothesis at α\* = .025, so we do not have significant evidence to suggest that α2, the second linear discriminant function, has a significant impact on group separability.
 
 Conclude:
 
-We have sufficient evidence to conclude α1 significantly contributes to group separability at α* = .025. We have insufficient evidence to conclude α2 significantly contributes to group separability at α* = .025.
+We have sufficient evidence to conclude α1 significantly contributes to group separability at α\* = .025. We have insufficient evidence to conclude α2 significantly contributes to group separability at α\* = .025.
 
 ### C.2 Part 3
 
-*Carry out tests of significance of each non-grouping variable, after adjusting the presence of other non-grouping variables. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test. *
+*Carry out tests of significance of each non-grouping variable, after adjusting the presence of other non-grouping variables. Be sure to specify corresponding null and alternative hypotheses, test statistic values, and p-values. Be sure to provide a conclusion for each test.*
 
 ```{r}
 partial.F(pollution[,-1], pollution[[1]])
 ```
-Using α* = .05/5 = .01
 
-We will check variable importance for each non-grouping variable after adjusting for the presence of the other non-grouping variables. 
+Using α\* = .05/5 = .01
+
+We will check variable importance for each non-grouping variable after adjusting for the presence of the other non-grouping variables.
 
 #### NONWHITE
 
@@ -339,7 +401,7 @@ H0: The variable NONWHITE has no significant effect on group separation
 
 Ha: The variable NONWHITE has a significant effect on group separation
 
-With a Lambda stat of 0.7351297 and a p-value of 0.0002875051, we reject H0 at α* = .01, so there is strong evidence that NONWHITE individually contributes significantly to group separability, adjusting for other variables.
+With a Lambda stat of 0.7351297 and a p-value of 0.0002875051, we reject H0 at α\* = .01, so there is strong evidence that NONWHITE individually contributes significantly to group separability, adjusting for other variables.
 
 #### SO2
 
@@ -347,8 +409,7 @@ H0: The variable SO2 has no significant effect on group separation
 
 Ha: The variable SO2 has a significant effect on group separation
 
-With a Lambda stat of 0.8028967 and a p-value of 0.0029749625, we reject H0 at α* = .01, so there is strong evidence that SO2 individually contributes significantly to group separability, adjusting for other variables.
-
+With a Lambda stat of 0.8028967 and a p-value of 0.0029749625, we reject H0 at α\* = .01, so there is strong evidence that SO2 individually contributes significantly to group separability, adjusting for other variables.
 
 #### NOX
 
@@ -356,8 +417,7 @@ H0: The variable NOX has no significant effect on group separation
 
 Ha: The variable NOX has a significant effect on group separation
 
-With a Lambda stat of 0.9394342 and a p-value of 0.1909672716, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that NOX, individually, contributes significantly to group separation adjusting for other variables.
-
+With a Lambda stat of 0.9394342 and a p-value of 0.1909672716, we do not reject H0 at α\* = .01, and so there is insufficient evidence to conclude that NOX, individually, contributes significantly to group separation adjusting for other variables.
 
 #### EDUC
 
@@ -365,8 +425,7 @@ H0: The variable EDUC has no significant effect on group separation
 
 Ha: The variable EDUC has a significant effect on group separation
 
-With a Lambda stat of 0.9559307 and a p-value of 0.3029006436, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that EDUC, individually, contributes significantly to group separation adjusting for other variables.
-
+With a Lambda stat of 0.9559307 and a p-value of 0.3029006436, we do not reject H0 at α\* = .01, and so there is insufficient evidence to conclude that EDUC, individually, contributes significantly to group separation adjusting for other variables.
 
 #### PRECIP
 
@@ -374,11 +433,11 @@ H0: The variable PRECIP has no significant effect on group separation
 
 Ha: The variable PRECIP has a significant effect on group separation
 
-With a Lambda stat of 0.9948165 and a p-value of 0.8713416049, we do not reject H0 at α* = .01, and so there is insufficient evidence to conclude that PRECIP, individually, contributes significantly to group separation adjusting for other variables.
+With a Lambda stat of 0.9948165 and a p-value of 0.8713416049, we do not reject H0 at α\* = .01, and so there is insufficient evidence to conclude that PRECIP, individually, contributes significantly to group separation adjusting for other variables.
 
 ### C.2 Part 4
 
-*Produce a plot of the first two linear discriminant functions. Be sure to include this plot in the report. Comment on the plot with regard to how well the discriminant functions separate the groups in the data. NOTE: When using the corresponding function, the system will wait for you to click on the graph to place a legend for the symbols used in the graph. Be sure to click on a location that is empty for the legend placement. If the legend placement causes your system to lock up, modify the original function and remove the code that inserts the legend. In that event, you can manually insert your own legend by annotating the graph *
+*Produce a plot of the first two linear discriminant functions. Be sure to include this plot in the report. Comment on the plot with regard to how well the discriminant functions separate the groups in the data. NOTE: When using the corresponding function, the system will wait for you to click on the graph to place a legend for the symbols used in the graph. Be sure to click on a location that is empty for the legend placement. If the legend placement causes your system to lock up, modify the original function and remove the code that inserts the legend. In that event, you can manually insert your own legend by annotating the graph*
 
 ```{r}
 discr.plot(pollution[,-1], pollution[[1]])
@@ -387,3 +446,53 @@ discr.plot(pollution[,-1], pollution[[1]])
 LD1 seems to separate a decent amount of the pluses and circles when looking at the projection onto LD1. However, there still seems to be some overlap between a few of the plues, a few of the circles, and many of the triangles.
 
 LD2 does not separate the groups well at all.
+
+## C.3
+
+### C.3 Part 1
+
+*Specify the linear classification functions for each of the group levels in the data.*
+
+For classification analysis, we will use the four most important variables, as determined by the discriminant analysis. These variables are: NONWHITE, SO2, NOX, and EDUC.
+
+```{r}
+pollution<-as.data.frame(pollution)
+lin.class(pollution[,-c(1,2)],pollution[,1])
+```
+
+The linear classification functions are specified below:
+
+L1(y) = 20.47375y1 + 0.1161389y2 - 0.09341959y3 + 0.06391368y4 - 116.6708
+
+L2(y) = 19.89371y1 + 0.2146811y2 - 0.11154897y3 + 0.07789059y4 - 111.0938
+
+L3(y) = 19.30087y1 + 0.3883845y2 - 0.11797003y3 + 0.09583682y4 - 108.3684
+
+### C.3 Part 2
+
+*Using Observation #1 from the data, apply the classification functions from the previous step to predict which group that observation should be classified as. Then compare this to the actual group classification from the data and state whether or not the prediction was correct.*
+
+```{r}
+obs1<-pollution[1,-c(1,2)]
+L1<-20.47375*obs1[1,1]+0.1161389*obs1[1,2]-0.09341959*obs1[1,3]+0.06391368*obs1[1,4]-116.6708
+L2<-19.89371*obs1[1,1]+0.2146811*obs1[1,2]-0.11154897*obs1[1,3]+0.07789059*obs1[1,4]-111.0938
+L3<-19.30087*obs1[1,1]+0.3883845*obs1[1,2]-0.11797003*obs1[1,3]+0.09583682*obs1[1,4]-108.3684
+```
+
+The predicted classification of Observation #1 is MORTRANK Group 1, because this corresponds to the linear classification function that resulted in the largest value \[L1(y)=130.66\]. Observation #1 belongs in Group 1, so the prediction is correct.
+
+### C.3 Part 3
+
+*Based on linear classification functions you generated, provide the corresponding “Confusion Matrix”, Apparent Error Rate, and Apparent Correct Classification Rate. Comment on how well the linear classification functions are classifying observations.*
+
+```{r}
+pol_rates<-rates(pollution[,-c(1,2)],pollution[,1])
+knitr::kable(pol_rates[[4]], caption = "Confusion Matrix")
+```
+
+Apparent Error Rate (AER): 0.333
+Apparent Correct Classification Rate (ACCR): 0.667
+
+When taking into consideration racial demographics (NONWHITE), pollution (SO2 and NOX), and education level (EDU), the linear classification functions assign observations to the correct age-adjusted mortality rank (MORTRANK) 66.7% of the time and assign them to an incorrect group 33.3%. This means that approximately 1 out of every 3 classifications will be incorrect.
+
+# Section D
