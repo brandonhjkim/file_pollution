@@ -1,8 +1,12 @@
 ---
 title: "419 Final Project"
-author: "Justin Koida, Brandon Kim"
+author: "Justin Koida, Brandon Kim, Nick Soares, Shrav Sheth"
 format:
-  html:
+  pdf:
+    mainfont: "Times New Roman"
+    fontsize: 12pt
+    engine: xelatex
+    prefer-html: true
     self-contained: true
     code-fold: true
     code-tools: true
@@ -19,72 +23,28 @@ code-fold: true
 ---
 
 <!-- --- -->
-
 <!-- title: "419 Final Project" -->
-
-<!-- author: "Justin Koida, PUT NAMES" -->
-
-<!-- format:  -->
-
+<!-- author: "Justin Koida, Brandon Kim" -->
+<!-- format: -->
 <!--   html: -->
-
-<!--     mainfont: "Times New Roman" -->
-
-<!--     fontsize: 12pt -->
-
-<!--     engine: xelatex -->
-
-<!--     prefer-html: true -->
-
 <!--     self-contained: true -->
-
 <!--     code-fold: true -->
-
 <!--     code-tools: true -->
-
 <!--     embed-resources: true -->
-
 <!--     toc: true -->
-
 <!--     toc-depth: 2 -->
-
 <!--     toc-title: Table of Contents -->
-
 <!--     theme: lux -->
-
 <!-- editor: source -->
-
 <!-- embed-resources: true -->
-
 <!-- code-tools: true -->
-
 <!-- echo: true -->
-
 <!-- code-fold: true -->
-
 <!-- --- -->
 
 # Set Up 
 
 ## Getting stuff running
-
-REMOVE THIS BEFORE SUBMISSION
-
-*In order for people to run this, you will need to download some stuff as described below*
-
-First, you need to have quarto installed.
-
-Once you have quarto, here are the required packages this project uses: tidyverse and knitr. You can install these by running the following commands in the R studio console
-
-`install.packages("tidyverse")`
-
-`install.packages("knitr")`
-
-In order to render the pdf, you will need to download tinytex to your local device by running the following command in the terminal.
-
-`quarto install tinytex`
-
-Once all of this is done, should be good to go.
 
 Libraries: 
 
@@ -98,10 +58,9 @@ library(tidymodels)
 library(MASS)
 ```
 
-Custom Functions: 
-
 ```{r Custom R functions loading}
 #| output: false
+#| echo: FALSE 
 
 discrim <- function(Y, group){
 Y <- data.matrix(Y)
@@ -224,7 +183,7 @@ pollution <- read_csv(here::here("pollution_419.csv"))
 pollution <- pollution %>%
   mutate(MORTRANK = as.factor(MORTRANK))
 
-knitr::kable(pollution, caption = "Pollution")
+knitr::kable(head(pollution), caption = "Glimpse of Dataset")
 ```
 
 # Section A
@@ -256,13 +215,9 @@ The goal of this project is to investigate the relationships between these envir
 
 # Section B
 
-To make our analysis easier for predictor-wise visualizations, we decided to develop an interactive RShiny applet to display all of the appropriate histograms as needed:
+To make our analysis easier for predictor-wise visualizations, we decided to develop an interactive [RShiny applet](https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/) to display all of the appropriate histograms as needed:
 
-## Interactive Histograms
-
-```{r}
-knitr::include_app('https://b7iuz3-brandon-kim.shinyapps.io/file_pollution_data_viz_app/', height = '925px')
-```
+## Histograms Interpretations 
 
 (Please keep in note of the varying x axis per distribution)
 
@@ -281,7 +236,7 @@ Overall, it seems like group 1 has massively different characteristics than the 
 ## PCA Clusters
 
 ```{r}
-prepped_recipe_pca <- recipe(~., data = dplyr::select(pollution, -MORTRANK)) %>%
+prepped_recipe_pca <- recipe(~., data=dplyr::select(pollution,-MORTRANK)) %>%
   step_normalize(all_numeric_predictors()) %>%  
   step_pca(all_numeric_predictors(), num_comp = 2) %>%
   prep() 
@@ -326,7 +281,7 @@ scaled_predictors %>%
     theme_bw()
 ```
 
-Unfortunately, the k-means algorithm does not fit the data well. Ideally, we would have 3 k-means groups of equal sizes that align with the MORTRANK groups well. However, k-means does not have a restriction on group sizes, so it seems as if 1 group is dominating. This k-means group was the original group that started with the centroid positioned at the 1st MORTRANK group's mean values, which indicates that the other two initial centroids were not able to diverege and capture their points properly. This is probably because those two initial centroids were far closer to each other in terms of proximity to points than the dominant intial centroid. This aligns with our principle component analysis, as group 1 has a far clearer separation than group 2 and 3.
+Unfortunately, the k-means algorithm does not fit the data well. Ideally, we would have 3 k-means groups of equal sizes that align with the MORTRANK groups well. However, k-means does not have a restriction on group sizes, so it seems as if 1 group is dominating. The k-means group that is dominating originally started with the centroid positioned at the 1st MORTRANK group's mean values, which indicates that the other two initial centroids were not able to diverege and capture their points properly. This is probably because those two initial centroids were far closer to each other in terms of proximity to points than the dominant intial centroid, allowing for the dominant group to capture more of the outlying points whilst the two other centroids "fought for control" in their limited shared area. This aligns with the findings from our principle component analysis, as group 1 has a far clearer separation than group 2 and 3.
 
 # Section C
 
@@ -504,6 +459,7 @@ $$L3(y) = 19.30087y_1 + 0.3883845y_2 - 0.11797003y_3 + 0.09583682y_4 - 108.3684$
 obs1<-pollution[1,-c(1,2)]
 lincomb <- linclass$coefs %*% t(obs1) + linclass$c.0
 rownames(lincomb) <- c('L1', 'L2', 'L3')
+colnames(lincomb) <- c('Lin. Combo')
 knitr::kable(lincomb, row.names = T)
 ```
 
@@ -536,7 +492,7 @@ pol_rates$`Error Rate`
 Apparent Error Rate (AER): 0.333
 Apparent Correct Classification Rate (ACCR): 0.667
 
-When taking into consideration racial demographics (NONWHITE), pollution (SO2 and NOX), and education level (EDU), the linear classification functions assign observations to the correct age-adjusted mortality rank (MORTRANK) 66.7% of the time and assign them to an incorrect group 33.3%. This means that approximately 1 out of every 3 classifications will be incorrect.
+When taking into consideration racial demographics (NONWHITE), pollution (SO2 and NOX), and education level (EDU), the linear classification functions assign observations to the correct age-adjusted mortality rank (MORTRANK) 66.7% of the time and assign them to an incorrect group 33.3%. This means that on average 1 out of every 3 classifications will be incorrect.
 
 # Section D
 
