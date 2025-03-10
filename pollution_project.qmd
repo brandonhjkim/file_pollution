@@ -313,7 +313,7 @@ GGally::ggpairs(pollution[,c('PRECIP','EDUC','NONWHITE','NOX','SO2')]) +
 
 *Write the complete form of all discriminant functions. Be sure to use standardized coefficients. Based on these coefficients, produce a ranking of variable importance (in the presence of other variables).*
 
-To start, we have $k = 3$ groups and $p = 6$ variables, so we have $min(p, k-1) = 2$ discriminant functions.
+To start, we have $k = 3$ groups and $p = 6$ variables, so we have $\text{min}(p, k-1) = 2$ discriminant functions.
 
 ```{r}
 discrim(pollution[,-1], pollution[[1]])
