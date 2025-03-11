@@ -258,11 +258,11 @@ As hypothesized, group 1 seems to have better separation from the other 2 groups
 
 ```{r}
 scaled_predictors <- pollution %>%
-  mutate(across(PRECIP:`SO2`, ~ (. - mean(.)/sd(.))))
+  mutate(across(PRECIP:SO2, ~ (. - mean(.)/sd(.))))
 
 starting_points <- scaled_predictors %>%
   group_by(MORTRANK) %>%
-  summarize(across(PRECIP:`SO2`, list(mean = mean))) %>%
+  summarize(across(PRECIP:SO2, list(mean = mean))) %>%
   dplyr::select(-MORTRANK) %>%
   as.matrix()
 
@@ -303,7 +303,7 @@ heatmap(cor_matrix)
 
 ```{r}
 #| message: FALSE 
-GGally::ggpairs(pollution[,c('PRECIP','EDUC','NONWHITE','NOX','SO2')]) +
+GGally::ggpairs(dplyr::select(pollution,-MORTRANK)) +
   theme_bw()
 ```
 
