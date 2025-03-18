@@ -1,5 +1,6 @@
 ---
 title: "419 Final Project"
+subtitle: "Group 6"
 author: "Justin Koida, Brandon Kim, Nick Soares, Shrav Sheth"
 format:
   pdf:
